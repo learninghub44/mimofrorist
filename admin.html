@@ -10,9 +10,20 @@
 </head>
 <body class="admin-body">
 
+<!-- Minimal icon sprite (admin.html only needs the back-arrow icon) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="icon-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+  </symbol>
+</svg>
+
 <!-- ===== LOGIN SCREEN ===== -->
 <div id="loginScreen" class="login-screen">
   <form id="loginForm" class="login-card">
+    <a href="index.html" class="back-home-link" aria-label="Back to homepage">
+      <svg class="icon" style="width:16px;height:16px"><use href="#icon-back"/></svg>
+      Back to homepage
+    </a>
     <div class="brand-mark" style="margin:0 auto 14px;">M</div>
     <h2>Admin Login</h2>
     <p class="login-sub">Mimohflorist & Gift Shop</p>

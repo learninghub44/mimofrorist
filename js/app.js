@@ -240,9 +240,24 @@ function checkoutWhatsApp() {
 function initUI() {
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('overlay');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
 
-  function openDrawer() { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+  function syncBodyScroll() {
+    const cartOpen = drawer.classList.contains('open');
+    const menuOpen = navLinks && navLinks.classList.contains('open');
+    document.body.style.overflow = (cartOpen || menuOpen) ? 'hidden' : '';
+  }
+
+  function openDrawer() {
+    if (navLinks && navLinks.classList.contains('open')) {
+      navLinks.classList.remove('open');
+      const navToggleIcon = navToggle && navToggle.querySelector('use');
+      if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
+    }
+    drawer.classList.add('open'); overlay.classList.add('open'); syncBodyScroll();
+  }
+  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); syncBodyScroll(); }
 
   document.getElementById('cartBtn').addEventListener('click', openDrawer);
   document.getElementById('cartClose').addEventListener('click', closeDrawer);
@@ -250,11 +265,18 @@ function initUI() {
   document.getElementById('checkoutBtn').addEventListener('click', checkoutWhatsApp);
 
   // Mobile nav
-  const navToggle = document.getElementById('navToggle');
-  const navLinks = document.getElementById('navLinks');
-  if (navToggle) {
-    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+  if (navToggle && navLinks) {
+    const navToggleIcon = navToggle.querySelector('use');
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      syncBodyScroll();
+      if (navToggleIcon) navToggleIcon.setAttribute('href', isOpen ? '#icon-close' : '#icon-menu');
+    });
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      syncBodyScroll();
+      if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
+    }));
   }
 
   updateCartUI();

@@ -10,7 +10,15 @@
 .login-card {
   background: var(--white); padding: 40px 36px; border-radius: var(--radius);
   box-shadow: var(--shadow-lg); width: 100%; max-width: 380px; text-align: center;
+  position: relative; display: flex; flex-direction: column;
 }
+.back-home-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; font-weight: 700; color: #8a6a70;
+  margin-bottom: 18px; text-decoration: none; transition: color 0.15s;
+  align-self: flex-start;
+}
+.back-home-link:hover { color: var(--rose); }
 .login-card h2 { margin-bottom: 2px; }
 .login-sub { color: #8a6a70; margin-bottom: 24px; font-size: 0.9rem; }
 .login-card label { display: block; text-align: left; font-weight: 700; font-size: 0.85rem; color: var(--plum); margin-bottom: 14px; }

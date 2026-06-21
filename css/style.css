@@ -35,7 +35,7 @@
 
 /* ===== Reset ===== */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 18px; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -1009,7 +1009,7 @@ footer a:hover { color: var(--gold); }
     align-items: center;
     justify-content: center;
     gap: 32px;
-    z-index: 99;
+    z-index: 150;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
