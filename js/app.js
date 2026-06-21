@@ -1,15 +1,16 @@
 // ============================================================
 // Mimohflorist & Gift Shop — site logic (redesigned)
 // ============================================================
+(function () {
 
 const cfg = window.MIMOH_CONFIG;
-let supabase = null;
+let supabaseClient = null;
 let SUPABASE_READY = false;
 
 try {
   if (!cfg) throw new Error('MIMOH_CONFIG missing — check js/config.js loaded before js/app.js');
   if (!window.supabase) throw new Error('Supabase library failed to load from CDN');
-  supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+  supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   SUPABASE_READY = true;
 } catch (err) {
   console.error('Supabase init failed:', err);
@@ -40,7 +41,7 @@ async function loadProducts() {
 
   grid.innerHTML = `<div class="empty-state">Loading arrangements...</div>`;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('products')
     .select('*')
     .order('sort_order', { ascending: true })
@@ -290,3 +291,5 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('loadProducts failed:', err);
   }
 });
+
+})();
