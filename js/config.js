@@ -10,8 +10,8 @@
 // ============================================================
 
 window.MIMOH_CONFIG = {
-  SUPABASE_URL: "YOUR_SUPABASE_PROJECT_URL",
-  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_KEY",
+  SUPABASE_URL: "https://ivwvnlacdgmmascjhspv.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_qhn90b5qggkb5D4wa73o0Q_x8VGCKDI",
   WHATSAPP_NUMBER: "254782403253", // no +, no spaces
   CURRENCY: "KES",
   BUSINESS_NAME: "Mimohflorist & Gift Shop",
