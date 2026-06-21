@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Mimohflorist & Gift Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="login-screen">
+  <form id="loginForm" class="login-card">
+    <div class="brand-mark" style="margin:0 auto 14px;">M</div>
+    <h2>Admin Login</h2>
+    <p class="login-sub">Mimohflorist & Gift Shop</p>
+    <label>Email
+      <input type="email" id="loginEmail" required autocomplete="username">
+    </label>
+    <label>Password
+      <input type="password" id="loginPassword" required autocomplete="current-password">
+    </label>
+    <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    <div id="loginError" class="form-error"></div>
+  </form>
+</div>
+
+<!-- ===== ADMIN DASHBOARD ===== -->
+<div id="adminScreen" class="admin-screen" style="display:none;">
+  <header class="admin-header">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">Mimohflorist</div>
+        <div class="brand-sub">Admin Panel</div>
+      </div>
+    </div>
+    <div class="admin-header-right">
+      <span id="adminEmail" class="admin-email"></span>
+      <button id="logoutBtn" class="btn btn-outline btn-sm">Log out</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-toolbar">
+      <h2>Products</h2>
+      <button id="newProductBtn" class="btn btn-primary">+ Add product</button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Featured</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="productTableBody">
+          <tr><td colspan="7" class="muted-cell">Loading products…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- ===== PRODUCT FORM MODAL ===== -->
+<div class="overlay" id="modalOverlay"></div>
+<div class="modal" id="productModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="modalTitle">Add product</h3>
+      <button class="cart-close" id="modalClose">✕</button>
+    </div>
+    <form id="productForm" class="modal-body">
+      <input type="hidden" id="productId">
+
+      <label>Photo
+        <input type="file" id="productImageFile" accept="image/*">
+        <img id="imagePreview" class="image-preview" style="display:none;">
+      </label>
+
+      <label>Name
+        <input type="text" id="productName" required placeholder="e.g. Rose & Lily Bouquet">
+      </label>
+
+      <label>Description
+        <textarea id="productDescription" rows="3" placeholder="Short description shown to customers"></textarea>
+      </label>
+
+      <div class="form-row">
+        <label>Price (KES)
+          <input type="number" id="productPrice" min="0" step="1" required placeholder="2500">
+        </label>
+        <label>Category
+          <input type="text" id="productCategory" required placeholder="Bouquets" list="categoryList">
+          <datalist id="categoryList"></datalist>
+        </label>
+      </div>
+
+      <div class="form-row form-row-checks">
+        <label class="checkbox-label">
+          <input type="checkbox" id="productInStock" checked> In stock
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="productFeatured"> Featured
+        </label>
+      </div>
+
+      <div id="formError" class="form-error"></div>
+
+      <div class="modal-actions">
+        <button type="button" id="cancelBtn" class="btn btn-outline">Cancel</button>
+        <button type="submit" id="saveBtn" class="btn btn-primary">Save product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

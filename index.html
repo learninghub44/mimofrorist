@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mimohflorist & Gift Shop | Florist · Events · Décor · Nairobi</title>
+<meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:ital@1&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <span>🌿 Same-day delivery across Nairobi</span>
+    <a href="https://wa.me/254782403253" target="_blank">Chat on WhatsApp: +254 782 403253</a>
+  </div>
+</div>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="#hero" class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">Mimohflorist</div>
+        <div class="brand-sub">& Gift Shop</div>
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+        🛍️<span class="cart-count" id="cartCount">0</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<section id="hero" class="hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow">Nairobi's freshest blooms</div>
+      <h1>Flowers &amp; gifts for every moment that matters.</h1>
+      <p class="lead">From birthdays to boardrooms, weddings to quiet apologies — we hand-arrange every order and deliver it across Nairobi the same day.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn btn-primary">Shop the collection</a>
+        <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">💬 Order on WhatsApp</a>
+      </div>
+      <div class="hero-stats">
+        <div>500+<span>Bouquets delivered</span></div>
+        <div>4.9★<span>Customer rating</span></div>
+        <div>Same-day<span>Nairobi delivery</span></div>
+      </div>
+    </div>
+    <div class="hero-art">🌸</div>
+  </div>
+</section>
+
+<section id="shop" class="section-alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">The Shop</div>
+      <h2>Hand-picked, freshly arranged</h2>
+      <p>Every piece is made to order. Tap + to add to your basket, then check out straight to WhatsApp.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Events &amp; Décor</div>
+      <h2>Weddings, corporate launches &amp; celebrations</h2>
+      <p>Tell us your vision and budget on WhatsApp and we'll put together a custom décor proposal — from stage flowers to table centrepieces.</p>
+    </div>
+    <div style="text-align:center;">
+      <a href="https://wa.me/254782403253?text=Hi%20Mimohflorist%2C%20I%27d%20like%20a%20quote%20for%20event%20decor." target="_blank" class="btn btn-gold">Request an event quote</a>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="section-alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">About Us</div>
+      <h2>Rooted in Nairobi, grown with care</h2>
+      <p>Mimohflorist &amp; Gift Shop is a Nairobi-based florist and gift studio. We source fresh stems daily and arrange every order by hand, so what arrives at your door looks just as good as what you ordered.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Get in Touch</div>
+      <h2>We'd love to help with your next order</h2>
+      <p>Fastest way to reach us is WhatsApp — send us the occasion, budget and delivery address and we'll confirm within minutes.</p>
+    </div>
+    <div style="text-align:center;">
+      <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">💬 Message us on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div>
+      <div class="brand-name" style="color:var(--gold)">Mimohflorist & Gift Shop</div>
+      <p>Fresh flowers, gifts and event décor — hand delivered across Nairobi.</p>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#shop">Shop</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li>Nairobi, Kenya</li>
+        <li><a href="https://wa.me/254782403253" target="_blank">+254 782 403253</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">© <span id="year"></span> Mimohflorist & Gift Shop. All rights reserved.</div>
+</footer>
+
+<!-- Cart Drawer -->
+<div class="overlay" id="overlay"></div>
+<aside class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3>Your Cart</h3>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none;">
+    <div class="cart-total"><span>Total</span><span id="cartTotalVal"></span></div>
+    <button class="btn btn-whatsapp btn-block" id="checkoutBtn">💬 Checkout on WhatsApp</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

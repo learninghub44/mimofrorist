@@ -1,0 +1,79 @@
+/* ===== Admin Panel ===== */
+.admin-body { background: var(--cream); min-height: 100vh; }
+
+/* Login */
+.login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 70% 20%, var(--rose-soft), var(--cream) 60%);
+  padding: 20px;
+}
+.login-card {
+  background: var(--white); padding: 40px 36px; border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); width: 100%; max-width: 380px; text-align: center;
+}
+.login-card h2 { margin-bottom: 2px; }
+.login-sub { color: #8a6a70; margin-bottom: 24px; font-size: 0.9rem; }
+.login-card label { display: block; text-align: left; font-weight: 700; font-size: 0.85rem; color: var(--plum); margin-bottom: 14px; }
+.login-card input {
+  width: 100%; margin-top: 6px; padding: 11px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid #e8d8d6; font-family: inherit; font-size: 0.95rem;
+}
+.login-card input:focus { outline: none; border-color: var(--rose); }
+.form-error { color: var(--rose-deep); font-size: 0.85rem; margin: 10px 0 0; min-height: 1.2em; font-weight: 700; }
+
+/* Header */
+.admin-header {
+  background: var(--white); border-bottom: 1px solid #eee; padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.admin-header .brand { display: flex; align-items: center; gap: 10px; }
+.admin-header-right { display: flex; align-items: center; gap: 14px; }
+.admin-email { font-size: 0.85rem; color: #8a6a70; }
+
+/* Main */
+.admin-main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.admin-toolbar h2 { margin: 0; }
+
+.admin-table-wrap { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; min-width: 680px; }
+.admin-table th, .admin-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f2eae8; font-size: 0.9rem; }
+.admin-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #8a6a70; }
+.admin-thumb { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; background: var(--rose-soft); }
+.muted-cell { text-align: center; color: #8a6a70; padding: 40px 0; }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; }
+.tag-stock { background: #e6f9ee; color: var(--success); }
+.tag-oos { background: #fde8ec; color: var(--rose-deep); }
+.tag-featured { background: #f7f0de; color: #9c7c2b; }
+.row-actions { display: flex; gap: 8px; }
+.icon-btn { border: none; background: #f5eceb; width: 32px; height: 32px; border-radius: 8px; font-size: 0.9rem; }
+.icon-btn:hover { background: var(--rose-soft); }
+
+/* Modal */
+.modal {
+  position: fixed; top: 0; right: -100%; bottom: 0; width: min(480px, 100%);
+  background: var(--white); z-index: 301; transition: right 0.3s ease; overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.2);
+}
+.modal.open { right: 0; }
+.modal-card { display: flex; flex-direction: column; min-height: 100%; }
+.modal-head { padding: 20px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-head h3 { margin: 0; }
+.modal-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.modal-body label { font-weight: 700; font-size: 0.85rem; color: var(--plum); display: block; }
+.modal-body input[type="text"], .modal-body input[type="number"], .modal-body textarea, .modal-body input[type="file"] {
+  width: 100%; margin-top: 6px; padding: 11px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid #e8d8d6; font-family: inherit; font-size: 0.95rem; resize: vertical;
+}
+.modal-body input:focus, .modal-body textarea:focus { outline: none; border-color: var(--rose); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-checks { grid-template-columns: 1fr 1fr; align-items: center; }
+.checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.checkbox-label input { width: auto; margin: 0; }
+.image-preview { margin-top: 10px; width: 100%; max-height: 180px; object-fit: cover; border-radius: var(--radius-sm); }
+.modal-actions { display: flex; gap: 12px; margin-top: auto; padding-top: 10px; }
+.modal-actions .btn { flex: 1; }
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+}
