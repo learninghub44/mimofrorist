@@ -3,6 +3,17 @@
 // ============================================================
 
 const cfg = window.MIMOH_CONFIG;
+
+if (!cfg) {
+  document.body.innerHTML = '<div style="padding:40px;font-family:sans-serif;color:#9B2335;">Configuration failed to load (js/config.js). Check that the file exists and loaded before admin.js.</div>';
+  throw new Error('MIMOH_CONFIG missing');
+}
+
+if (!window.supabase) {
+  document.body.innerHTML = '<div style="padding:40px;font-family:sans-serif;color:#9B2335;">The Supabase library failed to load from the CDN (unpkg.com). This is usually caused by an ad-blocker, browser extension, or network/firewall blocking unpkg.com. Try disabling ad-blockers for this site, or try a different network/browser, then refresh.</div>';
+  throw new Error('Supabase library not loaded');
+}
+
 const supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
 const fmt = (n) => `${cfg.CURRENCY} ${Number(n).toLocaleString('en-KE', { minimumFractionDigits: 0 })}`;
