@@ -3,7 +3,17 @@
 // ============================================================
 
 const cfg = window.MIMOH_CONFIG;
-const supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+let supabase = null;
+let SUPABASE_READY = false;
+
+try {
+  if (!cfg) throw new Error('MIMOH_CONFIG missing — check js/config.js loaded before js/app.js');
+  if (!window.supabase) throw new Error('Supabase library failed to load from CDN');
+  supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+  SUPABASE_READY = true;
+} catch (err) {
+  console.error('Supabase init failed:', err);
+}
 
 let ALL_PRODUCTS = [];
 let ACTIVE_CATEGORY = 'All';
@@ -22,6 +32,12 @@ const ICON = {
 // ---------- Load products ----------
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
+
+  if (!SUPABASE_READY) {
+    grid.innerHTML = `<div class="empty-state">Couldn't connect to load products. Please refresh the page, or reach us on WhatsApp.</div>`;
+    return;
+  }
+
   grid.innerHTML = `<div class="empty-state">Loading arrangements...</div>`;
 
   const { data, error } = await supabase
@@ -245,6 +261,10 @@ function initUI() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initUI();
-  loadProducts();
+  initUI(); // menu + cart drawer wiring — must always run, independent of data load
+  try {
+    loadProducts();
+  } catch (err) {
+    console.error('loadProducts failed:', err);
+  }
 });
