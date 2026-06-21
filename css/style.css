@@ -20,8 +20,9 @@
   --white:      #FFFFFF;
   --green:      #1D9E59;
 
-  --font-display: 'DM Sans', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Cormorant Garamond', serif;
+  --font-script:  'Great Vibes', cursive;
 
   --radius:    12px;
   --radius-sm: 8px;
@@ -86,6 +87,20 @@ p:last-child { margin-bottom: 0; }
   background: var(--rose);
   flex-shrink: 0;
 }
+
+/* ===== Script accent (romantic flourish) ===== */
+.script-accent {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  color: var(--rose);
+}
+h1 .script-accent { font-size: 1.3em; }
+.about-quote {
+  font-size: 1.15rem;
+  font-style: italic;
+}
+.about-quote .script-accent { font-size: 1.25em; font-style: normal; }
 
 /* ===== Buttons ===== */
 .btn {
@@ -191,16 +206,15 @@ p:last-child { margin-bottom: 0; }
   justify-content: center;
   color: var(--gold);
   flex-shrink: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.3rem;
-  font-style: italic;
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 1.6rem;
   box-shadow: 0 2px 8px rgba(44,26,31,0.25);
 }
 .brand-name {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
+  font-family: var(--font-script);
+  font-size: 1.75rem;
+  font-weight: 400;
   color: var(--plum);
   line-height: 1;
 }
@@ -788,8 +802,8 @@ footer {
   color: var(--gold);
 }
 footer .brand-name {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-family: var(--font-script);
+  font-size: 2rem;
 }
 footer p { font-size: 0.88rem; line-height: 1.65; color: rgba(255,255,255,0.5); max-width: 280px; }
 footer h4 {
