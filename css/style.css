@@ -400,21 +400,29 @@ p:last-child { margin-bottom: 0; }
   padding: 22px 0;
 }
 .value-strip-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 .value-item {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 9px;
   color: rgba(255,255,255,0.75);
   font-size: 0.82rem;
   font-weight: 500;
+  text-align: center;
 }
-.value-item .icon { color: var(--gold); width: 16px; height: 16px; }
+.value-item .icon { color: var(--gold); width: 16px; height: 16px; flex-shrink: 0; }
+
+@media (max-width: 860px) {
+  .value-strip-inner { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .value-strip-inner { grid-template-columns: 1fr; }
+  .value-item { justify-content: flex-start; }
+}
 
 /* ===== Shop Section ===== */
 .section-shop { padding: 90px 0; }
@@ -622,13 +630,15 @@ p:last-child { margin-bottom: 0; }
 .events-visual {
   position: relative;
   height: 380px;
-  background: linear-gradient(145deg, var(--rose-soft), #E8D0C9);
   border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
+}
+.events-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .events-placeholder { color: var(--rose); }
@@ -652,12 +662,13 @@ p:last-child { margin-bottom: 0; }
 }
 .about-card--main {
   inset: 0;
-  background: linear-gradient(155deg, var(--plum) 0%, var(--plum-light) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold);
   box-shadow: var(--shadow-lg);
+}
+.about-card--main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .about-pill {
   position: absolute;
@@ -972,9 +983,9 @@ footer a:hover { color: var(--gold); }
   .nav-links.open { transform: translateX(0); }
   .nav-links a { font-size: 1.2rem; }
   .nav-toggle { display: flex; }
-  .value-strip-inner { justify-content: center; gap: 16px; }
+  .value-strip-inner { gap: 16px; }
   .about-grid { grid-template-columns: 1fr; }
-  .about-visual { display: none; }
+  .about-visual { height: 280px; }
   .container { padding: 0 20px; }
   section { padding: 70px 0; }
 }
