@@ -316,45 +316,7 @@ p:last-child { margin-bottom: 0; }
   flex-wrap: wrap;
   margin-bottom: 44px;
 }
-.trust-row {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 20px 24px;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-}
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-}
-.trust-item strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--plum);
-  line-height: 1;
-}
-.trust-item span {
-  font-size: 0.72rem;
-  color: var(--muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.trust-icon { color: var(--rose); width: 22px; height: 22px; flex-shrink: 0; }
-.trust-divider {
-  width: 1px;
-  height: 36px;
-  background: var(--border);
-  margin: 0 20px;
-  flex-shrink: 0;
-}
+
 /* Hero visual */
 .hero-visual {
   position: relative;
@@ -668,28 +630,7 @@ p:last-child { margin-bottom: 0; }
   overflow: hidden;
   box-shadow: var(--shadow-lg);
 }
-.events-stat-card {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  background: var(--plum);
-  color: var(--white);
-  padding: 18px 24px;
-  border-radius: var(--radius);
-}
-.stat-number {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--gold);
-  line-height: 1;
-}
-.stat-label {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.65);
-  font-weight: 500;
-  margin-top: 4px;
-}
+
 .events-placeholder { color: var(--rose); }
 
 /* ===== About ===== */
@@ -740,28 +681,7 @@ p:last-child { margin-bottom: 0; }
   margin-bottom: 18px;
 }
 .about-content p { color: var(--muted); margin-bottom: 14px; line-height: 1.75; }
-.about-stats {
-  display: flex;
-  gap: 36px;
-  margin-top: 36px;
-  padding-top: 32px;
-  border-top: 1px solid var(--border);
-}
-.about-stat-num {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--rose);
-  line-height: 1;
-}
-.about-stat-label {
-  font-size: 0.75rem;
-  color: var(--muted);
-  font-weight: 500;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+
 
 /* ===== Contact ===== */
 .section-contact {
@@ -1052,8 +972,6 @@ footer a:hover { color: var(--gold); }
   .nav-links.open { transform: translateX(0); }
   .nav-links a { font-size: 1.2rem; }
   .nav-toggle { display: flex; }
-  .trust-row { flex-direction: column; gap: 16px; }
-  .trust-divider { width: 36px; height: 1px; margin: 0; }
   .value-strip-inner { justify-content: center; gap: 16px; }
   .about-grid { grid-template-columns: 1fr; }
   .about-visual { display: none; }
