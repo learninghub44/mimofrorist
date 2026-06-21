@@ -243,6 +243,8 @@ function initUI() {
   const overlay = document.getElementById('overlay');
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
+  const navLinksClose = document.getElementById('navLinksClose');
+  const navToggleIcon = navToggle && navToggle.querySelector('use');
 
   function syncBodyScroll() {
     const cartOpen = drawer.classList.contains('open');
@@ -250,12 +252,21 @@ function initUI() {
     document.body.style.overflow = (cartOpen || menuOpen) ? 'hidden' : '';
   }
 
+  function openMenu() {
+    if (!navLinks) return;
+    navLinks.classList.add('open');
+    syncBodyScroll();
+    if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-close');
+  }
+  function closeMenu() {
+    if (!navLinks) return;
+    navLinks.classList.remove('open');
+    syncBodyScroll();
+    if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
+  }
+
   function openDrawer() {
-    if (navLinks && navLinks.classList.contains('open')) {
-      navLinks.classList.remove('open');
-      const navToggleIcon = navToggle && navToggle.querySelector('use');
-      if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
-    }
+    closeMenu();
     drawer.classList.add('open'); overlay.classList.add('open'); syncBodyScroll();
   }
   function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); syncBodyScroll(); }
@@ -267,18 +278,19 @@ function initUI() {
 
   // Mobile nav
   if (navToggle && navLinks) {
-    const navToggleIcon = navToggle.querySelector('use');
     navToggle.addEventListener('click', () => {
-      const isOpen = navLinks.classList.toggle('open');
-      syncBodyScroll();
-      if (navToggleIcon) navToggleIcon.setAttribute('href', isOpen ? '#icon-close' : '#icon-menu');
+      navLinks.classList.contains('open') ? closeMenu() : openMenu();
     });
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      syncBodyScroll();
-      if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
-    }));
+    if (navLinksClose) navLinksClose.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
   }
+
+  // Escape key closes whichever overlay is open
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (drawer.classList.contains('open')) closeDrawer();
+    else if (navLinks && navLinks.classList.contains('open')) closeMenu();
+  });
 
   updateCartUI();
 }
