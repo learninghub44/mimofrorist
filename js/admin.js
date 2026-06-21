@@ -21,6 +21,7 @@ const fmt = (n) => `${cfg.CURRENCY} ${Number(n).toLocaleString('en-KE', { minimu
 
 let PRODUCTS = [];
 let selectedImageFile = null;
+let SEARCH_TERM = '';
 
 // ---------- Auth ----------
 async function checkSession() {
@@ -87,12 +88,31 @@ async function loadProducts() {
 
 function renderTable() {
   const tbody = document.getElementById('productTableBody');
+  const countEl = document.getElementById('productSearchCount');
+
   if (!PRODUCTS.length) {
     tbody.innerHTML = `<tr><td colspan="7" class="muted-cell">No products yet. Click "Add product" to create your first one.</td></tr>`;
+    if (countEl) countEl.textContent = '';
     return;
   }
 
-  tbody.innerHTML = PRODUCTS.map(p => `
+  const term = SEARCH_TERM.trim().toLowerCase();
+  const filtered = term
+    ? PRODUCTS.filter(p => (p.name || '').toLowerCase().includes(term))
+    : PRODUCTS;
+
+  if (countEl) {
+    countEl.textContent = term
+      ? `${filtered.length} of ${PRODUCTS.length} products`
+      : `${PRODUCTS.length} products`;
+  }
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="muted-cell">No products match "${escapeHtml(SEARCH_TERM.trim())}".</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => `
     <tr>
       <td><img class="admin-thumb" src="${p.image_url || ''}" onerror="this.style.visibility='hidden'"></td>
       <td><strong>${escapeHtml(p.name)}</strong></td>
@@ -113,6 +133,20 @@ function renderTable() {
     btn.addEventListener('click', () => openModal(btn.dataset.id)));
   tbody.querySelectorAll('[data-act="delete"]').forEach(btn =>
     btn.addEventListener('click', () => deleteProduct(btn.dataset.id)));
+}
+
+// ---------- Search ----------
+const productSearchInput = document.getElementById('productSearch');
+if (productSearchInput) {
+  let searchDebounce;
+  productSearchInput.addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    const value = e.target.value;
+    searchDebounce = setTimeout(() => {
+      SEARCH_TERM = value;
+      renderTable();
+    }, 150);
+  });
 }
 
 function populateCategoryList() {

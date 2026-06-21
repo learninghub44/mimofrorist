@@ -44,6 +44,13 @@
 .admin-toolbar h2 { margin: 0; }
 
 .admin-table-wrap { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow-x: auto; }
+.admin-search-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.admin-search-input {
+  flex: 1; max-width: 360px; padding: 10px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid #e8d8d6; font-family: inherit; font-size: 0.9rem;
+}
+.admin-search-input:focus { outline: none; border-color: var(--rose); }
+.admin-search-count { font-size: 0.82rem; color: #8a6a70; white-space: nowrap; }
 .admin-table { width: 100%; border-collapse: collapse; min-width: 680px; }
 .admin-table th, .admin-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f2eae8; font-size: 0.9rem; }
 .admin-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #8a6a70; }
