@@ -41,7 +41,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    errEl.textContent = 'Incorrect email or password.';
+    console.error('Login error:', error);
+    errEl.textContent = error.message || 'Login failed. Please try again.';
     return;
   }
   showAdmin(data.user);
