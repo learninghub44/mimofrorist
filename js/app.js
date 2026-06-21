@@ -19,6 +19,9 @@ try {
 let ALL_PRODUCTS = [];
 let ACTIVE_CATEGORY = 'All';
 let CART = JSON.parse(localStorage.getItem('mimoh_cart') || '[]');
+const PRODUCTS_PER_BATCH = 24;
+let visibleCount = PRODUCTS_PER_BATCH;
+let scrollObserver = null;
 
 const fmt = (n) => `${cfg.CURRENCY} ${Number(n).toLocaleString('en-KE', { minimumFractionDigits: 0 })}`;
 
@@ -67,6 +70,7 @@ function buildCategoryFilters() {
   wrap.querySelectorAll('.filter-chip').forEach(btn => {
     btn.addEventListener('click', () => {
       ACTIVE_CATEGORY = btn.dataset.cat;
+      visibleCount = PRODUCTS_PER_BATCH;
       buildCategoryFilters();
       renderProducts();
     });
@@ -81,10 +85,14 @@ function renderProducts() {
 
   if (!list.length) {
     grid.innerHTML = `<div class="empty-state">No products in this category yet — check back soon.</div>`;
+    if (scrollObserver) { scrollObserver.disconnect(); scrollObserver = null; }
     return;
   }
 
-  grid.innerHTML = list.map(p => `
+  const visibleList = list.slice(0, visibleCount);
+  const hasMore = visibleCount < list.length;
+
+  grid.innerHTML = visibleList.map(p => `
     <div class="product-card">
       <div class="product-img" ${p.image_url ? `style="background-image:url('${p.image_url}')"` : ''}>
         ${p.featured ? '<span class="badge">Featured</span>' : ''}
@@ -103,11 +111,30 @@ function renderProducts() {
         </div>
       </div>
     </div>
-  `).join('');
+  `).join('') + (hasMore ? `<div class="scroll-sentinel" id="scrollSentinel"><span class="scroll-sentinel-spinner"></span></div>` : '');
 
   grid.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', () => addToCart(btn.dataset.id));
   });
+
+  setupScrollObserver(hasMore);
+}
+
+function setupScrollObserver(hasMore) {
+  if (scrollObserver) { scrollObserver.disconnect(); scrollObserver = null; }
+  if (!hasMore) return;
+
+  const sentinel = document.getElementById('scrollSentinel');
+  if (!sentinel || !('IntersectionObserver' in window)) return;
+
+  scrollObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      visibleCount += PRODUCTS_PER_BATCH;
+      renderProducts();
+    }
+  }, { rootMargin: '400px' });
+
+  scrollObserver.observe(sentinel);
 }
 
 function escapeHtml(str) {

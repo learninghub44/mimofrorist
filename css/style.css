@@ -642,6 +642,22 @@ h1 .script-accent { font-size: 1.3em; }
   color: var(--muted);
   font-size: 0.95rem;
 }
+.scroll-sentinel {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+}
+.scroll-sentinel-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--rose-soft);
+  border-top-color: var(--rose);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===== Events ===== */
 .section-events {
@@ -1123,5 +1139,8 @@ footer a:hover { color: var(--gold); }
 @media (prefers-reduced-motion: reduce) {
   .nav-links, .cart-drawer, .overlay, .nav-links a::after, .toast {
     transition-duration: 0.01ms !important;
+  }
+  .scroll-sentinel-spinner {
+    animation-duration: 1.6s;
   }
 }
