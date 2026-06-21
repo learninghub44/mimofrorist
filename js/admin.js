@@ -1,6 +1,7 @@
 // ============================================================
 // Mimohflorist & Gift Shop — Admin panel logic
 // ============================================================
+(function () {
 
 const cfg = window.MIMOH_CONFIG;
 
@@ -14,7 +15,7 @@ if (!window.supabase) {
   throw new Error('Supabase library not loaded');
 }
 
-const supabase = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
 
 const fmt = (n) => `${cfg.CURRENCY} ${Number(n).toLocaleString('en-KE', { minimumFractionDigits: 0 })}`;
 
@@ -23,7 +24,7 @@ let selectedImageFile = null;
 
 // ---------- Auth ----------
 async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) {
     showAdmin(session.user);
   } else {
@@ -50,7 +51,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const errEl = document.getElementById('loginError');
   errEl.textContent = '';
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
     console.error('Login error:', error);
     errEl.textContent = error.message || 'Login failed. Please try again.';
@@ -60,7 +61,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 });
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   showLogin();
 });
 
@@ -69,7 +70,7 @@ async function loadProducts() {
   const tbody = document.getElementById('productTableBody');
   tbody.innerHTML = `<tr><td colspan="7" class="muted-cell">Loading products…</td></tr>`;
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('products')
     .select('*')
     .order('created_at', { ascending: false });
@@ -212,9 +213,9 @@ form.addEventListener('submit', async (e) => {
 
     let error;
     if (id) {
-      ({ error } = await supabase.from('products').update(payload).eq('id', id));
+      ({ error } = await supabaseClient.from('products').update(payload).eq('id', id));
     } else {
-      ({ error } = await supabase.from('products').insert(payload));
+      ({ error } = await supabaseClient.from('products').insert(payload));
     }
 
     if (error) throw error;
@@ -233,9 +234,9 @@ form.addEventListener('submit', async (e) => {
 async function uploadImage(file) {
   const ext = file.name.split('.').pop();
   const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: false });
+  const { error } = await supabaseClient.storage.from('product-images').upload(path, file, { upsert: false });
   if (error) throw error;
-  const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+  const { data } = supabaseClient.storage.from('product-images').getPublicUrl(path);
   return data.publicUrl;
 }
 
@@ -244,7 +245,7 @@ async function deleteProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!confirm(`Delete "${p?.name || 'this product'}"? This can't be undone.`)) return;
 
-  const { error } = await supabase.from('products').delete().eq('id', id);
+  const { error } = await supabaseClient.from('products').delete().eq('id', id);
   if (error) {
     showToast('Could not delete product');
     return;
@@ -263,3 +264,5 @@ function showToast(msg) {
 }
 
 checkSession();
+
+})();
