@@ -1,7 +1,7 @@
 /* ============================================================
    Mimohflorist & Gift Shop — Redesigned Stylesheet
    Palette: plum #2C1A1F, rose #9B2335, gold #C9A96E, blush #F5EDE8, cream #FDFAF7
-   Type: Cormorant Garamond (display/editorial), DM Sans (body/UI)
+   Type: DM Sans (display + body/UI)
    ============================================================ */
 
 :root {
@@ -20,7 +20,7 @@
   --white:      #FFFFFF;
   --green:      #1D9E59;
 
-  --font-display: 'Cormorant Garamond', serif;
+  --font-display: 'DM Sans', sans-serif;
   --font-body:    'DM Sans', sans-serif;
 
   --radius:    12px;
