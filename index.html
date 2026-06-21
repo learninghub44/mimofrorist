@@ -6,22 +6,88 @@
 <title>Mimohflorist & Gift Shop | Florist · Events · Décor · Nairobi</title>
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:ital@1&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+<!-- SVG icon sprite -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="icon-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+  </symbol>
+  <symbol id="icon-whatsapp" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.553 4.1 1.524 5.823L.057 23.486a.5.5 0 0 0 .624.601l5.805-1.524A11.956 11.956 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.004-1.372l-.359-.213-3.718.976.99-3.625-.234-.372A9.818 9.818 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/>
+  </symbol>
+  <symbol id="icon-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+  </symbol>
+  <symbol id="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+  </symbol>
+  <symbol id="icon-star" viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+  </symbol>
+  <symbol id="icon-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+  </symbol>
+  <symbol id="icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </symbol>
+  <symbol id="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.19 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z"/>
+  </symbol>
+  <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+  </symbol>
+  <symbol id="icon-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </symbol>
+  <symbol id="icon-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+  </symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  </symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </symbol>
+  <symbol id="icon-flower" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="2"/><path d="M12 2a3 3 0 0 1 3 3c0 1.657-3 5-3 5s-3-3.343-3-5a3 3 0 0 1 3-3z"/><path d="M12 22a3 3 0 0 1-3-3c0-1.657 3-5 3-5s3 3.343 3 5a3 3 0 0 1-3 3z"/><path d="M2 12a3 3 0 0 1 3-3c1.657 0 5 3 5 3s-3.343 3-5 3a3 3 0 0 1-3-3z"/><path d="M22 12a3 3 0 0 1-3 3c-1.657 0-5-3-5-3s3.343-3 5-3a3 3 0 0 1 3 3z"/>
+  </symbol>
+  <symbol id="icon-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+  </symbol>
+  <symbol id="icon-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </symbol>
+  <symbol id="icon-award" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+  </symbol>
+</svg>
+
 <div class="topbar">
   <div class="container">
-    <span>🌿 Same-day delivery across Nairobi</span>
-    <a href="https://wa.me/254782403253" target="_blank">Chat on WhatsApp: +254 782 403253</a>
+    <div class="topbar-left">
+      <svg class="icon"><use href="#icon-truck"/></svg>
+      Same-day delivery across Nairobi
+    </div>
+    <a href="https://wa.me/254782403253" target="_blank" class="topbar-wa">
+      <svg class="icon"><use href="#icon-whatsapp"/></svg>
+      +254 782 403253
+    </a>
   </div>
 </div>
 
-<nav class="navbar">
+<nav class="navbar" id="navbar">
   <div class="container">
     <a href="#hero" class="brand">
-      <div class="brand-mark">M</div>
+      <div class="brand-mark">
+        <svg class="icon" style="width:20px;height:20px"><use href="#icon-flower"/></svg>
+      </div>
       <div>
         <div class="brand-name">Mimohflorist</div>
         <div class="brand-sub">& Gift Shop</div>
@@ -35,122 +101,308 @@
     </ul>
     <div class="nav-actions">
       <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-        🛍️<span class="cart-count" id="cartCount">0</span>
+        <svg class="icon" style="width:22px;height:22px"><use href="#icon-bag"/></svg>
+        <span class="cart-count" id="cartCount">0</span>
       </button>
-      <button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <svg class="icon" style="width:24px;height:24px"><use href="#icon-menu"/></svg>
+      </button>
     </div>
   </div>
 </nav>
 
 <section id="hero" class="hero">
-  <div class="container">
-    <div>
-      <div class="eyebrow">Nairobi's freshest blooms</div>
-      <h1>Flowers &amp; gifts for every moment that matters.</h1>
-      <p class="lead">From birthdays to boardrooms, weddings to quiet apologies — we hand-arrange every order and deliver it across Nairobi the same day.</p>
-      <div class="hero-actions">
-        <a href="#shop" class="btn btn-primary">Shop the collection</a>
-        <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">💬 Order on WhatsApp</a>
+  <div class="hero-bg-pattern"></div>
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        Nairobi's freshest blooms
       </div>
-      <div class="hero-stats">
-        <div>500+<span>Bouquets delivered</span></div>
-        <div>4.9★<span>Customer rating</span></div>
-        <div>Same-day<span>Nairobi delivery</span></div>
+      <h1>Flowers &amp;&nbsp;gifts for every moment that matters.</h1>
+      <p class="lead">From birthdays to boardrooms, weddings to quiet apologies — we hand-arrange every order and deliver across Nairobi the same day.</p>
+      <div class="hero-actions">
+        <a href="#shop" class="btn btn-primary">
+          Shop the collection
+          <svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>
+        </a>
+        <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">
+          <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+          Order on WhatsApp
+        </a>
+      </div>
+      <div class="trust-row">
+        <div class="trust-item">
+          <svg class="icon trust-icon"><use href="#icon-award"/></svg>
+          <div>
+            <strong>500+</strong>
+            <span>Bouquets delivered</span>
+          </div>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <svg class="icon trust-icon"><use href="#icon-star"/></svg>
+          <div>
+            <strong>4.9</strong>
+            <span>Customer rating</span>
+          </div>
+        </div>
+        <div class="trust-divider"></div>
+        <div class="trust-item">
+          <svg class="icon trust-icon"><use href="#icon-truck"/></svg>
+          <div>
+            <strong>Same-day</strong>
+            <span>Nairobi delivery</span>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="hero-art">🌸</div>
+    <div class="hero-visual">
+      <div class="hero-card hero-card--main">
+        <div class="hero-img-wrap" id="heroImgWrap">
+          <div class="hero-img-placeholder">
+            <svg class="icon" style="width:64px;height:64px;opacity:0.25"><use href="#icon-flower"/></svg>
+          </div>
+        </div>
+        <div class="hero-card-tag">
+          <svg class="icon" style="width:14px;height:14px"><use href="#icon-check"/></svg>
+          Fresh &amp; hand-arranged
+        </div>
+      </div>
+      <div class="hero-card hero-card--accent">
+        <svg class="icon" style="width:22px;height:22px;color:var(--gold)"><use href="#icon-leaf"/></svg>
+        <div>
+          <div class="accent-label">Sourced daily</div>
+          <div class="accent-sub">Always fresh, never stored</div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section id="shop" class="section-alt">
+<!-- Value props strip -->
+<div class="value-strip">
+  <div class="container value-strip-inner">
+    <div class="value-item">
+      <svg class="icon"><use href="#icon-leaf"/></svg>
+      <span>Fresh stems, sourced daily</span>
+    </div>
+    <div class="value-item">
+      <svg class="icon"><use href="#icon-truck"/></svg>
+      <span>Same-day Nairobi delivery</span>
+    </div>
+    <div class="value-item">
+      <svg class="icon"><use href="#icon-gift"/></svg>
+      <span>Bespoke gift packaging</span>
+    </div>
+    <div class="value-item">
+      <svg class="icon"><use href="#icon-heart"/></svg>
+      <span>Hand-arranged with care</span>
+    </div>
+  </div>
+</div>
+
+<section id="shop" class="section-shop">
   <div class="container">
     <div class="section-head">
-      <div class="eyebrow">The Shop</div>
+      <div class="eyebrow"><span class="eyebrow-line"></span>The Shop</div>
       <h2>Hand-picked, freshly arranged</h2>
-      <p>Every piece is made to order. Tap + to add to your basket, then check out straight to WhatsApp.</p>
+      <p>Every piece is made to order. Add to your basket, then check out straight to WhatsApp.</p>
     </div>
     <div class="filters" id="filters"></div>
     <div class="product-grid" id="productGrid"></div>
   </div>
 </section>
 
-<section id="events">
-  <div class="container">
-    <div class="section-head">
-      <div class="eyebrow">Events &amp; Décor</div>
+<section id="events" class="section-events">
+  <div class="container events-grid">
+    <div class="events-content">
+      <div class="eyebrow"><span class="eyebrow-line"></span>Events &amp; Décor</div>
       <h2>Weddings, corporate launches &amp; celebrations</h2>
-      <p>Tell us your vision and budget on WhatsApp and we'll put together a custom décor proposal — from stage flowers to table centrepieces.</p>
+      <p>Tell us your vision and budget on WhatsApp and we'll create a custom décor proposal — from stage florals to table centrepieces.</p>
+      <ul class="events-features">
+        <li>
+          <svg class="icon feature-icon"><use href="#icon-check"/></svg>
+          Bridal &amp; wedding floral design
+        </li>
+        <li>
+          <svg class="icon feature-icon"><use href="#icon-check"/></svg>
+          Corporate events &amp; product launches
+        </li>
+        <li>
+          <svg class="icon feature-icon"><use href="#icon-check"/></svg>
+          Table centrepieces &amp; stage décor
+        </li>
+        <li>
+          <svg class="icon feature-icon"><use href="#icon-check"/></svg>
+          Custom quote within 24 hours
+        </li>
+      </ul>
+      <a href="https://wa.me/254782403253?text=Hi%20Mimohflorist%2C%20I%27d%20like%20a%20quote%20for%20event%20decor." target="_blank" class="btn btn-primary">
+        <svg class="icon" style="width:16px;height:16px"><use href="#icon-calendar"/></svg>
+        Request an event quote
+      </a>
     </div>
-    <div style="text-align:center;">
-      <a href="https://wa.me/254782403253?text=Hi%20Mimohflorist%2C%20I%27d%20like%20a%20quote%20for%20event%20decor." target="_blank" class="btn btn-gold">Request an event quote</a>
+    <div class="events-visual">
+      <div class="events-stat-card">
+        <div class="stat-number">200+</div>
+        <div class="stat-label">Events decorated</div>
+      </div>
+      <div class="events-placeholder">
+        <svg class="icon" style="width:80px;height:80px;opacity:0.15"><use href="#icon-calendar"/></svg>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="about" class="section-alt">
-  <div class="container">
-    <div class="section-head">
-      <div class="eyebrow">About Us</div>
+<section id="about" class="section-about">
+  <div class="container about-grid">
+    <div class="about-visual">
+      <div class="about-card about-card--main">
+        <svg class="icon" style="width:72px;height:72px;opacity:0.12"><use href="#icon-flower"/></svg>
+      </div>
+      <div class="about-pill">
+        <svg class="icon" style="width:16px;height:16px;color:var(--rose)"><use href="#icon-leaf"/></svg>
+        Nairobi-rooted
+      </div>
+    </div>
+    <div class="about-content">
+      <div class="eyebrow"><span class="eyebrow-line"></span>About Us</div>
       <h2>Rooted in Nairobi, grown with care</h2>
-      <p>Mimohflorist &amp; Gift Shop is a Nairobi-based florist and gift studio. We source fresh stems daily and arrange every order by hand, so what arrives at your door looks just as good as what you ordered.</p>
+      <p>Mimohflorist &amp; Gift Shop is a Nairobi-based florist and gift studio. We source fresh stems daily and arrange every order by hand, so what arrives at your door looks exactly as beautiful as what you ordered.</p>
+      <p>We believe a well-chosen arrangement says what words often can't — and we take that responsibility seriously with every bouquet we build.</p>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="about-stat-num">3+</div>
+          <div class="about-stat-label">Years in Nairobi</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">500+</div>
+          <div class="about-stat-label">Happy customers</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">100%</div>
+          <div class="about-stat-label">Hand-arranged</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="contact">
-  <div class="container">
-    <div class="section-head">
-      <div class="eyebrow">Get in Touch</div>
+<section id="contact" class="section-contact">
+  <div class="container contact-grid">
+    <div class="section-head" style="text-align:left;margin:0">
+      <div class="eyebrow"><span class="eyebrow-line"></span>Get in Touch</div>
       <h2>We'd love to help with your next order</h2>
       <p>Fastest way to reach us is WhatsApp — send us the occasion, budget and delivery address and we'll confirm within minutes.</p>
+      <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp" style="margin-top:24px">
+        <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+        Message us on WhatsApp
+      </a>
     </div>
-    <div style="text-align:center;">
-      <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">💬 Message us on WhatsApp</a>
+    <div class="contact-details">
+      <div class="contact-item">
+        <div class="contact-icon-wrap">
+          <svg class="icon"><use href="#icon-map"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Location</div>
+          <div class="contact-val">Nairobi, Kenya</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-wrap">
+          <svg class="icon"><use href="#icon-phone"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">WhatsApp</div>
+          <a href="https://wa.me/254782403253" class="contact-val">+254 782 403253</a>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-wrap">
+          <svg class="icon"><use href="#icon-truck"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Delivery</div>
+          <div class="contact-val">Same-day across Nairobi</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="container">
-    <div>
-      <div class="brand-name" style="color:var(--gold)">Mimohflorist & Gift Shop</div>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <div class="brand-mark" style="margin-bottom:14px">
+        <svg class="icon" style="width:20px;height:20px"><use href="#icon-flower"/></svg>
+      </div>
+      <div class="brand-name" style="color:var(--gold);margin-bottom:6px">Mimohflorist</div>
+      <div class="brand-sub" style="color:var(--gold-muted);margin-bottom:12px">& Gift Shop</div>
       <p>Fresh flowers, gifts and event décor — hand delivered across Nairobi.</p>
     </div>
     <div>
-      <h4>Quick Links</h4>
+      <h4>Shop</h4>
       <ul>
-        <li><a href="#shop">Shop</a></li>
-        <li><a href="#events">Events</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="#shop">All Products</a></li>
+        <li><a href="#events">Events &amp; Décor</a></li>
+        <li><a href="#about">Our Story</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
     <div>
       <h4>Contact</h4>
       <ul>
-        <li>Nairobi, Kenya</li>
-        <li><a href="https://wa.me/254782403253" target="_blank">+254 782 403253</a></li>
+        <li>
+          <svg class="icon" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"><use href="#icon-map"/></svg>
+          Nairobi, Kenya
+        </li>
+        <li>
+          <a href="https://wa.me/254782403253" target="_blank">
+            <svg class="icon" style="width:14px;height:14px;vertical-align:-2px;margin-right:6px"><use href="#icon-whatsapp"/></svg>
+            +254 782 403253
+          </a>
+        </li>
       </ul>
     </div>
   </div>
-  <div class="foot-bottom">© <span id="year"></span> Mimohflorist & Gift Shop. All rights reserved.</div>
+  <div class="foot-bottom">
+    <div class="container">
+      © <span id="year"></span> Mimohflorist &amp; Gift Shop. All rights reserved.
+    </div>
+  </div>
 </footer>
 
 <!-- Cart Drawer -->
 <div class="overlay" id="overlay"></div>
 <aside class="cart-drawer" id="cartDrawer">
   <div class="cart-head">
-    <h3>Your Cart</h3>
-    <button class="cart-close" id="cartClose">✕</button>
+    <div>
+      <div class="cart-head-title">Your Cart</div>
+      <div class="cart-head-sub" id="cartHeadSub">0 items</div>
+    </div>
+    <button class="cart-close" id="cartClose" aria-label="Close cart">
+      <svg class="icon" style="width:20px;height:20px"><use href="#icon-close"/></svg>
+    </button>
   </div>
   <div class="cart-items" id="cartItems"></div>
   <div class="cart-foot" id="cartFoot" style="display:none;">
-    <div class="cart-total"><span>Total</span><span id="cartTotalVal"></span></div>
-    <button class="btn btn-whatsapp btn-block" id="checkoutBtn">💬 Checkout on WhatsApp</button>
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cartTotalVal"></span>
+    </div>
+    <button class="btn btn-whatsapp btn-block" id="checkoutBtn">
+      <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+      Checkout on WhatsApp
+    </button>
   </div>
 </aside>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <svg class="icon" style="width:16px;height:16px"><use href="#icon-check"/></svg>
+  <span id="toastMsg"></span>
+</div>
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>

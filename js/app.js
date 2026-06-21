@@ -1,5 +1,5 @@
 // ============================================================
-// Mimohflorist & Gift Shop — site logic
+// Mimohflorist & Gift Shop — site logic (redesigned)
 // ============================================================
 
 const cfg = window.MIMOH_CONFIG;
@@ -11,10 +11,18 @@ let CART = JSON.parse(localStorage.getItem('mimoh_cart') || '[]');
 
 const fmt = (n) => `${cfg.CURRENCY} ${Number(n).toLocaleString('en-KE', { minimumFractionDigits: 0 })}`;
 
+const ICON = {
+  flower: `<svg class="icon" style="width:40px;height:40px"><use href="#icon-flower"/></svg>`,
+  plus:   `<svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>`,
+  minus:  `<svg class="icon" style="width:14px;height:14px"><use href="#icon-minus"/></svg>`,
+  trash:  `<svg class="icon" style="width:15px;height:15px"><use href="#icon-trash"/></svg>`,
+  bag:    `<svg class="icon" style="width:64px;height:64px"><use href="#icon-bag"/></svg>`,
+};
+
 // ---------- Load products ----------
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
-  grid.innerHTML = `<div class="empty-state">Loading fresh arrangements…</div>`;
+  grid.innerHTML = `<div class="empty-state">Loading arrangements...</div>`;
 
   const { data, error } = await supabase
     .from('products')
@@ -61,10 +69,10 @@ function renderProducts() {
 
   grid.innerHTML = list.map(p => `
     <div class="product-card">
-      <div class="product-img" style="${p.image_url ? `background-image:url('${p.image_url}')` : ''}">
+      <div class="product-img" ${p.image_url ? `style="background-image:url('${p.image_url}')"` : ''}>
         ${p.featured ? '<span class="badge">Featured</span>' : ''}
-        ${!p.in_stock ? '<div class="oos">Out of stock</div>' : ''}
-        ${!p.image_url ? '🌸' : ''}
+        ${!p.in_stock ? '<div class="oos">Out of Stock</div>' : ''}
+        ${!p.image_url ? ICON.flower : ''}
       </div>
       <div class="product-body">
         <div class="product-cat">${p.category || ''}</div>
@@ -72,7 +80,9 @@ function renderProducts() {
         <div class="product-desc">${escapeHtml(p.description || '')}</div>
         <div class="product-foot">
           <div class="price">${fmt(p.price)}</div>
-          <button class="add-btn" ${!p.in_stock ? 'disabled' : ''} data-id="${p.id}" title="Add to cart">+</button>
+          <button class="add-btn" ${!p.in_stock ? 'disabled' : ''} data-id="${p.id}" title="Add to cart" aria-label="Add ${escapeHtml(p.name)} to cart">
+            ${ICON.plus}
+          </button>
         </div>
       </div>
     </div>
@@ -130,12 +140,21 @@ function cartCount() {
 }
 
 function updateCartUI() {
-  document.getElementById('cartCount').textContent = cartCount();
+  const count = cartCount();
+  document.getElementById('cartCount').textContent = count;
+
+  const sub = document.getElementById('cartHeadSub');
+  if (sub) sub.textContent = `${count} ${count === 1 ? 'item' : 'items'}`;
+
   const itemsWrap = document.getElementById('cartItems');
   const footWrap = document.getElementById('cartFoot');
 
   if (!CART.length) {
-    itemsWrap.innerHTML = `<div class="cart-empty">Your cart is empty.<br>Add something beautiful 🌸</div>`;
+    itemsWrap.innerHTML = `
+      <div class="cart-empty">
+        <svg class="icon" style="width:48px;height:48px;color:var(--rose-soft)"><use href="#icon-bag"/></svg>
+        <p style="margin-top:12px">Your cart is empty.<br>Add something beautiful.</p>
+      </div>`;
     footWrap.style.display = 'none';
     return;
   }
@@ -143,15 +162,23 @@ function updateCartUI() {
   footWrap.style.display = 'block';
   itemsWrap.innerHTML = CART.map(i => `
     <div class="cart-item">
-      <img src="${i.image_url || ''}" onerror="this.style.visibility='hidden'">
+      <div class="cart-item-thumb" ${i.image_url ? `style="background-image:url('${i.image_url}')"` : ''}>
+        ${!i.image_url ? `<div style="display:flex;align-items:center;justify-content:center;height:100%"><svg class="icon" style="width:24px;height:24px;color:var(--rose);opacity:0.4"><use href="#icon-flower"/></svg></div>` : ''}
+      </div>
       <div class="cart-item-info">
-        <div class="name">${escapeHtml(i.name)}</div>
-        <div class="unit">${fmt(i.price)} each</div>
+        <div class="cart-item-name">${escapeHtml(i.name)}</div>
+        <div class="cart-item-unit">${fmt(i.price)} each</div>
         <div class="qty-row">
-          <button class="qty-btn" data-act="dec" data-id="${i.id}">−</button>
+          <button class="qty-btn" data-act="dec" data-id="${i.id}" aria-label="Decrease quantity">
+            <svg class="icon" style="width:14px;height:14px"><use href="#icon-minus"/></svg>
+          </button>
           <span class="qty-val">${i.qty}</span>
-          <button class="qty-btn" data-act="inc" data-id="${i.id}">+</button>
-          <button class="remove-btn" data-id="${i.id}">Remove</button>
+          <button class="qty-btn" data-act="inc" data-id="${i.id}" aria-label="Increase quantity">
+            <svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg>
+          </button>
+          <button class="remove-btn" data-id="${i.id}" aria-label="Remove item">
+            <svg class="icon" style="width:15px;height:15px"><use href="#icon-trash"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -169,10 +196,11 @@ function updateCartUI() {
 
 function showToast(msg) {
   const toast = document.getElementById('toast');
-  toast.textContent = msg;
+  const toastMsg = document.getElementById('toastMsg');
+  if (toastMsg) toastMsg.textContent = msg;
   toast.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
 }
 
 // ---------- Checkout via WhatsApp ----------
@@ -192,22 +220,20 @@ function checkoutWhatsApp() {
   window.open(url, '_blank');
 }
 
-// ---------- Drawer + nav wiring ----------
+// ---------- UI wiring ----------
 function initUI() {
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('overlay');
 
-  document.getElementById('cartBtn').addEventListener('click', () => {
-    drawer.classList.add('open'); overlay.classList.add('open');
-  });
+  function openDrawer() { drawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  document.getElementById('cartBtn').addEventListener('click', openDrawer);
   document.getElementById('cartClose').addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
   document.getElementById('checkoutBtn').addEventListener('click', checkoutWhatsApp);
 
-  function closeDrawer() {
-    drawer.classList.remove('open'); overlay.classList.remove('open');
-  }
-
+  // Mobile nav
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
   if (navToggle) {
