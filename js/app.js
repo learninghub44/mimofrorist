@@ -243,7 +243,7 @@ function initUI() {
   const overlay = document.getElementById('overlay');
   const navToggle = document.getElementById('navToggle');
   const navLinks = document.getElementById('navLinks');
-  const navLinksClose = document.getElementById('navLinksClose');
+  const navOverlay = document.getElementById('navOverlay');
   const navToggleIcon = navToggle && navToggle.querySelector('use');
 
   function syncBodyScroll() {
@@ -255,12 +255,14 @@ function initUI() {
   function openMenu() {
     if (!navLinks) return;
     navLinks.classList.add('open');
+    if (navOverlay) navOverlay.classList.add('open');
     syncBodyScroll();
     if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-close');
   }
   function closeMenu() {
     if (!navLinks) return;
     navLinks.classList.remove('open');
+    if (navOverlay) navOverlay.classList.remove('open');
     syncBodyScroll();
     if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
   }
@@ -281,7 +283,7 @@ function initUI() {
     navToggle.addEventListener('click', () => {
       navLinks.classList.contains('open') ? closeMenu() : openMenu();
     });
-    if (navLinksClose) navLinksClose.addEventListener('click', closeMenu);
+    if (navOverlay) navOverlay.addEventListener('click', closeMenu);
     navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
   }
 
