@@ -7,7 +7,7 @@
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body>
 
@@ -76,6 +76,12 @@
   <symbol id="icon-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
   </symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+  </symbol>
+  <symbol id="icon-log-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+  </symbol>
 </svg>
 
 <div class="topbar">
@@ -120,6 +126,10 @@
       <button class="wishlist-btn" id="wishlistBtn" aria-label="Open wishlist">
         <svg class="icon" style="width:20px;height:20px"><use href="#icon-heart"/></svg>
         <span class="wishlist-count" id="wishlistCount" style="display:none">0</span>
+      </button>
+      <button class="acct-btn" id="acctBtn" aria-label="My account">
+        <svg class="icon" style="width:20px;height:20px"><use href="#icon-user"/></svg>
+        <span class="acct-avatar" id="acctAvatar" style="display:none"></span>
       </button>
       <button class="cart-btn" id="cartBtn" aria-label="Open cart">
         <svg class="icon" style="width:22px;height:22px"><use href="#icon-bag"/></svg>
@@ -654,6 +664,88 @@
 </footer>
 
 <!-- Wishlist Drawer -->
+<!-- ===== ACCOUNT PANEL ===== -->
+<div class="acct-overlay" id="acctOverlay"></div>
+<aside class="acct-drawer" id="acctDrawer" aria-label="My account">
+  <div class="acct-header">
+    <h3 class="acct-title" id="acctTitle">My Account</h3>
+    <button class="acct-close" id="acctClose" aria-label="Close account panel">
+      <svg class="icon" style="width:22px;height:22px"><use href="#icon-close"/></svg>
+    </button>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="acct-tabs" id="acctTabs">
+    <button class="acct-tab active" data-tab="login">Login</button>
+    <button class="acct-tab" data-tab="register">Register</button>
+  </div>
+
+  <!-- Login form -->
+  <div class="acct-pane" id="acctPaneLogin">
+    <p class="acct-sub">Welcome back! Sign in to track your orders.</p>
+    <div class="acct-field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="acct-field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <p class="acct-msg" id="loginMsg"></p>
+    <button class="acct-submit" id="loginBtn">Sign In</button>
+    <p class="acct-switch">No account? <a href="#" id="goRegister">Create one →</a></p>
+    <a class="acct-forgot" href="#" id="forgotPw">Forgot password?</a>
+  </div>
+
+  <!-- Register form -->
+  <div class="acct-pane" id="acctPaneRegister" style="display:none">
+    <p class="acct-sub">Create an account to save your wishlist and order history.</p>
+    <div class="acct-field">
+      <label>Full name</label>
+      <input type="text" id="regName" placeholder="Jane Doe" autocomplete="name">
+    </div>
+    <div class="acct-field">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="acct-field">
+      <label>Phone (optional)</label>
+      <input type="tel" id="regPhone" placeholder="+254 7XX XXX XXX" autocomplete="tel">
+    </div>
+    <div class="acct-field">
+      <label>Password</label>
+      <input type="password" id="regPassword" placeholder="Min 6 characters" autocomplete="new-password">
+    </div>
+    <p class="acct-msg" id="regMsg"></p>
+    <button class="acct-submit" id="registerBtn">Create Account</button>
+    <p class="acct-switch">Have an account? <a href="#" id="goLogin">Sign in →</a></p>
+  </div>
+
+  <!-- Profile pane (shown when logged in) -->
+  <div class="acct-pane" id="acctPaneProfile" style="display:none">
+    <div class="acct-avatar-lg" id="acctAvatarLg"></div>
+    <p class="acct-displayname" id="acctDisplayName"></p>
+    <p class="acct-email-label" id="acctEmailLabel"></p>
+    <div class="acct-profile-actions">
+      <button class="acct-outline-btn" id="viewOrdersBtn">
+        <svg class="icon" style="width:16px;height:16px"><use href="#icon-bag"/></svg> My Orders
+      </button>
+      <button class="acct-outline-btn danger" id="logoutBtn">
+        <svg class="icon" style="width:16px;height:16px"><use href="#icon-log-out"/></svg> Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- Orders pane -->
+  <div class="acct-pane" id="acctPaneOrders" style="display:none">
+    <button class="acct-back" id="backToProfile">← Back to profile</button>
+    <h4 class="acct-orders-title">Order History</h4>
+    <div class="acct-orders-list" id="acctOrdersList">
+      <p class="acct-empty">Loading orders…</p>
+    </div>
+  </div>
+</aside>
+
 <div class="wishlist-overlay" id="wishlistOverlay"></div>
 <aside class="wishlist-drawer" id="wishlistDrawer" aria-label="Wishlist">
   <div class="cart-head">
@@ -743,6 +835,6 @@
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>

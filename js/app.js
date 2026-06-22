@@ -374,6 +374,20 @@ function checkoutWhatsApp() {
   ].join('\n');
   const url = `https://wa.me/${cfg.WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(url, '_blank');
+
+  // Save order record if user is logged in
+  if (SUPABASE_READY && ACCT && ACCT.user) {
+    const summary = CART.map(i => `${i.qty}× ${i.name}`).join(', ');
+    supabaseClient.from('orders').insert({
+      user_id: ACCT.user.id,
+      total_amount: cartTotal(),
+      items_summary: summary,
+      voucher_code: APPLIED_VOUCHER ? APPLIED_VOUCHER.code : null,
+      discount_amt: cartDiscount()
+    }).then(({ error }) => {
+      if (error) console.warn('Order save failed:', error.message);
+    });
+  }
 }
 
 // ---------- UI wiring ----------
@@ -733,6 +747,234 @@ function renderWishlistDrawer() {
   });
 }
 
+// ===== ACCOUNT MODULE =====
+const ACCT = { user: null, session: null };
+
+function openAcct() {
+  document.getElementById('acctDrawer').classList.add('is-open');
+  document.getElementById('acctOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+  if (ACCT.user) showProfilePane();
+  else showAuthTabs('login');
+}
+
+function closeAcct() {
+  document.getElementById('acctDrawer').classList.remove('is-open');
+  document.getElementById('acctOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+function showAuthTabs(tab) {
+  document.getElementById('acctTabs').style.display = 'flex';
+  setAcctPane(tab === 'login' ? 'Login' : 'Register',
+    tab === 'login' ? 'acctPaneLogin' : 'acctPaneRegister');
+  document.querySelectorAll('.acct-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+}
+
+function showProfilePane() {
+  document.getElementById('acctTabs').style.display = 'none';
+  setAcctPane('My Account', 'acctPaneProfile');
+  const name = ACCT.user.user_metadata?.display_name || ACCT.user.email.split('@')[0];
+  const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('acctAvatarLg').textContent = initials;
+  document.getElementById('acctDisplayName').textContent = name;
+  document.getElementById('acctEmailLabel').textContent = ACCT.user.email;
+  // Update nav avatar
+  const navAvatar = document.getElementById('acctAvatar');
+  if (navAvatar) {
+    navAvatar.textContent = initials;
+    navAvatar.style.display = 'flex';
+    document.querySelector('#acctBtn svg').style.display = 'none';
+  }
+}
+
+function setAcctPane(title, paneId) {
+  document.getElementById('acctTitle').textContent = title;
+  document.querySelectorAll('.acct-pane').forEach(p => p.style.display = 'none');
+  document.getElementById(paneId).style.display = 'block';
+}
+
+function setMsg(id, msg, isSuccess = false) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'acct-msg' + (isSuccess ? ' success' : '');
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  if (!email || !pw) return setMsg('loginMsg', 'Please fill in all fields.');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pw });
+    if (error) throw error;
+    ACCT.user = data.user;
+    ACCT.session = data.session;
+    closeAcct();
+    setTimeout(() => { openAcct(); showProfilePane(); }, 100);
+  } catch (err) {
+    setMsg('loginMsg', err.message || 'Login failed. Check your email and password.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Sign In';
+  }
+}
+
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const phone = document.getElementById('regPhone').value.trim();
+  const pw = document.getElementById('regPassword').value;
+  if (!name || !email || !pw) return setMsg('regMsg', 'Name, email, and password are required.');
+  if (pw.length < 6) return setMsg('regMsg', 'Password must be at least 6 characters.');
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email, password: pw,
+      options: { data: { display_name: name, phone: phone || null } }
+    });
+    if (error) throw error;
+    if (data.user && data.session) {
+      ACCT.user = data.user; ACCT.session = data.session;
+      // Upsert profile row
+      await supabaseClient.from('customer_profiles').upsert({
+        id: data.user.id, display_name: name, phone: phone || null
+      });
+      closeAcct();
+      setTimeout(() => { openAcct(); showProfilePane(); }, 100);
+    } else {
+      setMsg('regMsg', 'Account created! Check your email to confirm then sign in.', true);
+    }
+  } catch (err) {
+    setMsg('regMsg', err.message || 'Registration failed. Try a different email.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+}
+
+async function doLogout() {
+  await supabaseClient.auth.signOut();
+  ACCT.user = null; ACCT.session = null;
+  // Reset nav avatar
+  const navAvatar = document.getElementById('acctAvatar');
+  if (navAvatar) {
+    navAvatar.style.display = 'none';
+    document.querySelector('#acctBtn svg').style.display = '';
+  }
+  closeAcct();
+}
+
+async function doForgotPw() {
+  const email = prompt('Enter your email address to reset your password:');
+  if (!email) return;
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+  if (error) alert('Error: ' + error.message);
+  else alert('Password reset email sent! Check your inbox.');
+}
+
+async function loadOrders() {
+  const listEl = document.getElementById('acctOrdersList');
+  listEl.innerHTML = '<p class="acct-empty">Loading…</p>';
+  try {
+    const { data, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .eq('user_id', ACCT.user.id)
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      listEl.innerHTML = '<p class="acct-empty">No orders yet — start shopping! 🌸</p>';
+      return;
+    }
+    listEl.innerHTML = data.map(o => {
+      const date = new Date(o.created_at).toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric' });
+      return `<div class="acct-order-card">
+        <div class="acct-order-meta">
+          <span class="acct-order-id">#${o.id.slice(0,8).toUpperCase()}</span>
+          <span class="acct-order-date">${date}</span>
+        </div>
+        <div class="acct-order-total">KES ${Number(o.total_amount||0).toLocaleString()}</div>
+        <div class="acct-order-items">${o.items_summary || 'Order via WhatsApp'}</div>
+      </div>`;
+    }).join('');
+  } catch {
+    listEl.innerHTML = '<p class="acct-empty">Could not load orders. Try again later.</p>';
+  }
+}
+
+function initAccount() {
+  if (!SUPABASE_READY) return;
+
+  // Restore session on page load
+  supabaseClient.auth.getSession().then(({ data }) => {
+    if (data?.session) {
+      ACCT.user = data.session.user;
+      ACCT.session = data.session;
+      // Update nav avatar silently
+      const name = ACCT.user.user_metadata?.display_name || ACCT.user.email.split('@')[0];
+      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      const navAvatar = document.getElementById('acctAvatar');
+      if (navAvatar) {
+        navAvatar.textContent = initials;
+        navAvatar.style.display = 'flex';
+        const icon = document.querySelector('#acctBtn svg');
+        if (icon) icon.style.display = 'none';
+      }
+    }
+  });
+
+  // Listen for auth state changes
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      ACCT.user = session.user; ACCT.session = session;
+    } else if (event === 'SIGNED_OUT') {
+      ACCT.user = null; ACCT.session = null;
+    }
+  });
+
+  // Wiring
+  document.getElementById('acctBtn').addEventListener('click', openAcct);
+  document.getElementById('acctClose').addEventListener('click', closeAcct);
+  document.getElementById('acctOverlay').addEventListener('click', closeAcct);
+
+  document.querySelectorAll('.acct-tab').forEach(tab => {
+    tab.addEventListener('click', () => showAuthTabs(tab.dataset.tab));
+  });
+
+  document.getElementById('goRegister').addEventListener('click', e => { e.preventDefault(); showAuthTabs('register'); });
+  document.getElementById('goLogin').addEventListener('click', e => { e.preventDefault(); showAuthTabs('login'); });
+  document.getElementById('forgotPw').addEventListener('click', e => { e.preventDefault(); doForgotPw(); });
+
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('registerBtn').addEventListener('click', doRegister);
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+  document.getElementById('viewOrdersBtn').addEventListener('click', () => {
+    setAcctPane('Order History', 'acctPaneOrders');
+    document.getElementById('acctTabs').style.display = 'none';
+    loadOrders();
+  });
+
+  document.getElementById('backToProfile').addEventListener('click', () => {
+    showProfilePane();
+  });
+
+  // Submit on Enter key in login/register fields
+  ['loginEmail','loginPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  });
+  ['regName','regEmail','regPhone','regPassword'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') doRegister(); });
+  });
+}
+
+
 function initWishlist() {
   const drawer = document.getElementById('wishlistDrawer');
   const overlay = document.getElementById('wishlistOverlay');
@@ -846,6 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeroSlider();
   initFaqAccordion();
   initSearch();
+  initAccount();
   initWishlist();
   initNewsletter();
   initWaBubble();
