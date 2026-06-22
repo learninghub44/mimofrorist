@@ -890,6 +890,12 @@ function setAcctPane(title, paneId) {
   document.getElementById('acctTitle').textContent = title;
   document.querySelectorAll('.acct-pane').forEach(p => p.style.display = 'none');
   document.getElementById(paneId).style.display = 'block';
+  // Always scroll drawer to top so content isn't buried below the fold
+  const drawer = document.getElementById('acctDrawer');
+  if (drawer) drawer.scrollTop = 0;
+  // Hide tabs when not on login/register panes
+  const tabs = document.getElementById('acctTabs');
+  if (tabs) tabs.style.display = (paneId === 'acctPaneLogin' || paneId === 'acctPaneRegister') ? '' : 'none';
 }
 
 function setMsg(id, msg, isSuccess = false) {
