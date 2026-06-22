@@ -85,6 +85,7 @@
 .form-row-checks { grid-template-columns: 1fr 1fr; align-items: center; }
 .checkbox-label { display: flex; align-items: center; gap: 8px; font-weight: 700; }
 .checkbox-label input { width: auto; margin: 0; }
+.label-hint { font-weight: 500; font-size: 0.75rem; color: #b09096; text-transform: none; letter-spacing: 0; }
 .image-preview { margin-top: 10px; width: 100%; max-height: 180px; object-fit: cover; border-radius: var(--radius-sm); }
 .modal-actions { display: flex; gap: 12px; margin-top: auto; padding-top: 10px; }
 .modal-actions .btn { flex: 1; }

@@ -112,14 +112,25 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = filtered.map(p => `
+  tbody.innerHTML = filtered.map(p => {
+    const onSale = p.sale_price != null && Number(p.sale_price) > 0 && Number(p.sale_price) < Number(p.price);
+    const priceCell = onSale
+      ? `<span style="text-decoration:line-through;color:#b09096;font-size:0.82rem;">${fmt(p.price)}</span><br><strong style="color:var(--rose);">${fmt(p.sale_price)}</strong>`
+      : fmt(p.price);
+    const tags = [
+      p.featured ? '<span class="tag tag-featured">Featured</span>' : '',
+      p.is_best_seller ? '<span class="tag tag-stock">Best Seller</span>' : '',
+      p.is_new_arrival ? '<span class="tag tag-stock">New</span>' : '',
+    ].filter(Boolean).join(' ');
+
+    return `
     <tr>
       <td><img class="admin-thumb" src="${p.image_url || ''}" onerror="this.style.visibility='hidden'"></td>
       <td><strong>${escapeHtml(p.name)}</strong></td>
       <td>${escapeHtml(p.category || '')}</td>
-      <td>${fmt(p.price)}</td>
+      <td>${priceCell}</td>
       <td>${p.in_stock ? '<span class="tag tag-stock">In stock</span>' : '<span class="tag tag-oos">Out of stock</span>'}</td>
-      <td>${p.featured ? '<span class="tag tag-featured">Featured</span>' : ''}</td>
+      <td>${tags}</td>
       <td>
         <div class="row-actions">
           <button class="icon-btn" data-act="edit" data-id="${p.id}" title="Edit">✏️</button>
@@ -127,7 +138,8 @@ function renderTable() {
         </div>
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   tbody.querySelectorAll('[data-act="edit"]').forEach(btn =>
     btn.addEventListener('click', () => openModal(btn.dataset.id)));
@@ -179,9 +191,13 @@ function openModal(productId = null) {
     document.getElementById('productName').value = p.name;
     document.getElementById('productDescription').value = p.description || '';
     document.getElementById('productPrice').value = p.price;
+    document.getElementById('productSalePrice').value = p.sale_price != null ? p.sale_price : '';
     document.getElementById('productCategory').value = p.category || '';
+    document.getElementById('productBadge').value = p.badge || '';
     document.getElementById('productInStock').checked = p.in_stock;
     document.getElementById('productFeatured').checked = p.featured;
+    document.getElementById('productBestSeller').checked = !!p.is_best_seller;
+    document.getElementById('productNewArrival').checked = !!p.is_new_arrival;
     if (p.image_url) {
       const preview = document.getElementById('imagePreview');
       preview.src = p.image_url;
@@ -235,13 +251,24 @@ form.addEventListener('submit', async (e) => {
       imageUrl = await uploadImage(selectedImageFile);
     }
 
+    const salePriceRaw = document.getElementById('productSalePrice').value.trim();
+    const price = parseFloat(document.getElementById('productPrice').value);
+    let salePrice = salePriceRaw ? parseFloat(salePriceRaw) : null;
+    if (salePrice != null && salePrice >= price) {
+      throw new Error('Sale price must be lower than the regular price.');
+    }
+
     const payload = {
       name: document.getElementById('productName').value.trim(),
       description: document.getElementById('productDescription').value.trim(),
-      price: parseFloat(document.getElementById('productPrice').value),
+      price,
+      sale_price: salePrice,
       category: document.getElementById('productCategory').value.trim(),
+      badge: document.getElementById('productBadge').value.trim() || null,
       in_stock: document.getElementById('productInStock').checked,
       featured: document.getElementById('productFeatured').checked,
+      is_best_seller: document.getElementById('productBestSeller').checked,
+      is_new_arrival: document.getElementById('productNewArrival').checked,
       image_url: imageUrl,
     };
 

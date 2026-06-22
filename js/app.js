@@ -59,6 +59,20 @@ async function loadProducts() {
   ALL_PRODUCTS = data || [];
   buildCategoryFilters();
   renderProducts();
+  renderCuratedSections();
+}
+
+function renderCuratedSections() {
+  let bestSellers = ALL_PRODUCTS.filter(p => p.is_best_seller);
+  let newArrivals = ALL_PRODUCTS.filter(p => p.is_new_arrival);
+
+  // Graceful fallback while you're still curating: show featured/newest items
+  // so the sections aren't empty before badges are set in admin.
+  if (!bestSellers.length) bestSellers = ALL_PRODUCTS.filter(p => p.featured).slice(0, 10);
+  if (!newArrivals.length) newArrivals = [...ALL_PRODUCTS].slice(0, 10);
+
+  renderCarousel('bestSellersTrack', bestSellers.slice(0, 12));
+  renderCarousel('newArrivalsTrack', newArrivals.slice(0, 12));
 }
 
 function buildCategoryFilters() {
@@ -74,6 +88,58 @@ function buildCategoryFilters() {
       buildCategoryFilters();
       renderProducts();
     });
+  });
+
+  const dropdown = document.getElementById('navShopDropdown');
+  if (dropdown) {
+    const realCats = cats.filter(c => c !== 'All');
+    dropdown.innerHTML = realCats.map(c =>
+      `<a href="#shop" data-cat="${c}">${escapeHtml(c)}</a>`
+    ).join('') || `<a href="#shop">Browse all</a>`;
+    dropdown.querySelectorAll('a[data-cat]').forEach(link => {
+      link.addEventListener('click', () => {
+        ACTIVE_CATEGORY = link.dataset.cat;
+        visibleCount = PRODUCTS_PER_BATCH;
+        buildCategoryFilters();
+        renderProducts();
+        document.dispatchEvent(new CustomEvent('mimoh:closeMenus'));
+      });
+    });
+  }
+}
+
+function productCardHtml(p) {
+  const onSale = p.sale_price != null && Number(p.sale_price) > 0 && Number(p.sale_price) < Number(p.price);
+  const badgeText = p.badge || (onSale ? 'Sale' : (p.is_new_arrival ? 'New' : (p.is_best_seller ? 'Best Seller' : (p.featured ? 'Featured' : ''))));
+  const priceHtml = onSale
+    ? `<div class="price-row"><span class="price price-strike">${fmt(p.price)}</span><span class="price price-sale">${fmt(p.sale_price)}</span></div>`
+    : `<div class="price">${fmt(p.price)}</div>`;
+
+  return `
+    <div class="product-card">
+      <div class="product-img" ${p.image_url ? `style="background-image:url('${p.image_url}')"` : ''}>
+        ${badgeText ? `<span class="badge${onSale ? ' badge-sale' : ''}">${escapeHtml(badgeText)}</span>` : ''}
+        ${!p.in_stock ? '<div class="oos">Out of Stock</div>' : ''}
+        ${!p.image_url ? ICON.flower : ''}
+      </div>
+      <div class="product-body">
+        <div class="product-cat">${p.category || ''}</div>
+        <div class="product-name">${escapeHtml(p.name)}</div>
+        <div class="product-desc">${escapeHtml(p.description || '')}</div>
+        <div class="product-foot">
+          ${priceHtml}
+          <button class="add-btn" ${!p.in_stock ? 'disabled' : ''} data-id="${p.id}" title="Add to cart" aria-label="Add ${escapeHtml(p.name)} to cart">
+            ${ICON.plus}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function wireAddButtons(container) {
+  container.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => addToCart(btn.dataset.id));
   });
 }
 
@@ -92,32 +158,24 @@ function renderProducts() {
   const visibleList = list.slice(0, visibleCount);
   const hasMore = visibleCount < list.length;
 
-  grid.innerHTML = visibleList.map(p => `
-    <div class="product-card">
-      <div class="product-img" ${p.image_url ? `style="background-image:url('${p.image_url}')"` : ''}>
-        ${p.featured ? '<span class="badge">Featured</span>' : ''}
-        ${!p.in_stock ? '<div class="oos">Out of Stock</div>' : ''}
-        ${!p.image_url ? ICON.flower : ''}
-      </div>
-      <div class="product-body">
-        <div class="product-cat">${p.category || ''}</div>
-        <div class="product-name">${escapeHtml(p.name)}</div>
-        <div class="product-desc">${escapeHtml(p.description || '')}</div>
-        <div class="product-foot">
-          <div class="price">${fmt(p.price)}</div>
-          <button class="add-btn" ${!p.in_stock ? 'disabled' : ''} data-id="${p.id}" title="Add to cart" aria-label="Add ${escapeHtml(p.name)} to cart">
-            ${ICON.plus}
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('') + (hasMore ? `<div class="scroll-sentinel" id="scrollSentinel"><span class="scroll-sentinel-spinner"></span></div>` : '');
+  grid.innerHTML = visibleList.map(productCardHtml).join('')
+    + (hasMore ? `<div class="scroll-sentinel" id="scrollSentinel"><span class="scroll-sentinel-spinner"></span></div>` : '');
 
-  grid.querySelectorAll('.add-btn').forEach(btn => {
-    btn.addEventListener('click', () => addToCart(btn.dataset.id));
-  });
-
+  wireAddButtons(grid);
   setupScrollObserver(hasMore);
+}
+
+function renderCarousel(containerId, products) {
+  const track = document.getElementById(containerId);
+  if (!track) return;
+  const section = track.closest('.carousel-section');
+  if (!products.length) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
+  track.innerHTML = products.map(productCardHtml).join('');
+  wireAddButtons(track);
 }
 
 function setupScrollObserver(hasMore) {
@@ -272,6 +330,7 @@ function initUI() {
   const navLinks = document.getElementById('navLinks');
   const navOverlay = document.getElementById('navOverlay');
   const navToggleIcon = navToggle && navToggle.querySelector('use');
+  const whatsappFloat = document.getElementById('whatsappFloat');
 
   function syncBodyScroll() {
     const cartOpen = drawer.classList.contains('open');
@@ -279,11 +338,19 @@ function initUI() {
     document.body.style.overflow = (cartOpen || menuOpen) ? 'hidden' : '';
   }
 
+  function syncWhatsappFloat() {
+    if (!whatsappFloat) return;
+    const cartOpen = drawer.classList.contains('open');
+    const menuOpen = navLinks && navLinks.classList.contains('open');
+    whatsappFloat.classList.toggle('is-hidden', cartOpen || menuOpen);
+  }
+
   function openMenu() {
     if (!navLinks) return;
     navLinks.classList.add('open');
     if (navOverlay) navOverlay.classList.add('open');
     syncBodyScroll();
+    syncWhatsappFloat();
     if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-close');
   }
   function closeMenu() {
@@ -291,14 +358,15 @@ function initUI() {
     navLinks.classList.remove('open');
     if (navOverlay) navOverlay.classList.remove('open');
     syncBodyScroll();
+    syncWhatsappFloat();
     if (navToggleIcon) navToggleIcon.setAttribute('href', '#icon-menu');
   }
 
   function openDrawer() {
     closeMenu();
-    drawer.classList.add('open'); overlay.classList.add('open'); syncBodyScroll();
+    drawer.classList.add('open'); overlay.classList.add('open'); syncBodyScroll(); syncWhatsappFloat();
   }
-  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); syncBodyScroll(); }
+  function closeDrawer() { drawer.classList.remove('open'); overlay.classList.remove('open'); syncBodyScroll(); syncWhatsappFloat(); }
 
   document.getElementById('cartBtn').addEventListener('click', openDrawer);
   document.getElementById('cartClose').addEventListener('click', closeDrawer);
@@ -312,6 +380,22 @@ function initUI() {
     });
     if (navOverlay) navOverlay.addEventListener('click', closeMenu);
     navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+  }
+
+  // Dynamically-added nav dropdown links (rendered after product load) dispatch
+  // this event instead of relying on the one-time listener attachment above
+  document.addEventListener('mimoh:closeMenus', closeMenu);
+
+  // Shop dropdown: toggle on click (mobile-friendly), hover handled by CSS on desktop
+  const navDropdownTrigger = document.querySelector('.nav-dropdown-trigger');
+  const navDropdownItem = document.querySelector('.nav-item-dropdown');
+  if (navDropdownTrigger && navDropdownItem) {
+    navDropdownTrigger.addEventListener('click', (e) => {
+      if (window.matchMedia('(hover: none)').matches || window.innerWidth <= 768) {
+        e.preventDefault();
+        navDropdownItem.classList.toggle('open');
+      }
+    });
   }
 
   // Escape key closes whichever overlay is open

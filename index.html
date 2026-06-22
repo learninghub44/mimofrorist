@@ -7,7 +7,7 @@
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=8">
 </head>
 <body>
 
@@ -92,7 +92,13 @@
       </div>
     </a>
     <ul class="nav-links" id="navLinks">
-      <li><a href="#shop">Shop</a></li>
+      <li class="nav-item-dropdown">
+        <a href="#shop" class="nav-dropdown-trigger">
+          Shop
+          <svg class="icon nav-caret" style="width:13px;height:13px"><use href="#icon-plus"/></svg>
+        </a>
+        <div class="nav-dropdown-panel" id="navShopDropdown"></div>
+      </li>
       <li><a href="#events">Events</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -174,6 +180,36 @@
     </div>
   </div>
 </div>
+
+<section class="carousel-section" id="bestSellersSection">
+  <div class="container">
+    <div class="carousel-head">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-line"></span>Customer Favourites</div>
+        <h2>Best Sellers</h2>
+      </div>
+      <a href="#shop" class="carousel-viewall">View all<svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
+    </div>
+    <div class="carousel-scroll">
+      <div class="carousel-track" id="bestSellersTrack"></div>
+    </div>
+  </div>
+</section>
+
+<section class="carousel-section" id="newArrivalsSection">
+  <div class="container">
+    <div class="carousel-head">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-line"></span>Just In</div>
+        <h2>New Arrivals</h2>
+      </div>
+      <a href="#shop" class="carousel-viewall">View all<svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
+    </div>
+    <div class="carousel-scroll">
+      <div class="carousel-track" id="newArrivalsTrack"></div>
+    </div>
+  </div>
+</section>
 
 <section id="shop" class="section-shop">
   <div class="container">
@@ -356,9 +392,14 @@
   <span id="toastMsg"></span>
 </div>
 
+<a href="https://wa.me/254782403253" target="_blank" rel="noopener" class="whatsapp-float" id="whatsappFloat" aria-label="Chat with us on WhatsApp">
+  <span class="whatsapp-float-ring"></span>
+  <svg class="icon" style="width:28px;height:28px"><use href="#icon-whatsapp"/></svg>
+</a>
+
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=2"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
