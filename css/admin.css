@@ -70,7 +70,17 @@
   background: var(--white); z-index: 301; transition: right 0.3s ease; overflow-y: auto;
   box-shadow: -10px 0 40px rgba(0,0,0,0.2);
 }
-.modal.open { right: 0; }
+.modal.open,
+.modal.is-open { right: 0; }
+
+/* Overlay backdrop for promo / blog modals */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+}
+.overlay.is-open { display: block; }
 .modal-card { display: flex; flex-direction: column; min-height: 100%; }
 .modal-head { padding: 20px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
 .modal-head h3 { margin: 0; }
