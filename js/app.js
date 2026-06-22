@@ -46,6 +46,18 @@ async function loadPromoCodes() {
   } catch { /* keep fallback */ }
 }
 let APPLIED_VOUCHER = null; // { code, type, value, label }
+let SELECTED_ZONE = null;   // zone name string
+let DELIVERY_ZONES = [
+  'CBD / City Centre',
+  'Westlands',
+  'Karen / Langata',
+  'Kilimani / Kileleshwa',
+  'Eastlands',
+  'Thika Road',
+  'Ngong Road',
+  'Runda / Gigiri',
+  'Outside Nairobi',
+];
 const PRODUCTS_PER_BATCH = 24;
 let visibleCount = PRODUCTS_PER_BATCH;
 let scrollObserver = null;
@@ -376,6 +388,7 @@ function checkoutWhatsApp() {
   const discLine = disc > 0 && APPLIED_VOUCHER
     ? [`Voucher (${APPLIED_VOUCHER.code}): - ${fmt(disc)}`]
     : [];
+  const zoneLine = SELECTED_ZONE ? [`Delivery area: ${SELECTED_ZONE}`] : [];
   const msg = [
     `Hello ${cfg.BUSINESS_NAME}! I'd like to place an order:`,
     '',
@@ -384,6 +397,7 @@ function checkoutWhatsApp() {
     `Subtotal: ${fmt(cartSubtotal())}`,
     ...discLine,
     `Total: ${fmt(cartTotal())}`,
+    ...zoneLine,
     '',
     'Please confirm availability and delivery details. Thank you!'
   ].join('\n');
@@ -455,6 +469,21 @@ function initUI() {
   document.getElementById('cartClose').addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
   document.getElementById('checkoutBtn').addEventListener('click', checkoutWhatsApp);
+
+  // Delivery zone select
+  const zoneSelect = document.getElementById('deliveryZoneSelect');
+  if (zoneSelect) {
+    DELIVERY_ZONES.forEach(zone => {
+      const opt = document.createElement('option');
+      opt.value = zone;
+      opt.textContent = zone;
+      zoneSelect.appendChild(opt);
+    });
+    zoneSelect.addEventListener('change', () => {
+      SELECTED_ZONE = zoneSelect.value || null;
+      updateCartUI();
+    });
+  }
 
   // Voucher code
   const voucherInput = document.getElementById('voucherInput');
