@@ -211,6 +211,7 @@ function renderProducts() {
     + (hasMore ? `<div class="scroll-sentinel" id="scrollSentinel"><span class="scroll-sentinel-spinner"></span></div>` : '');
 
   wireAddButtons(grid);
+  wireQuickView(grid);
   setupScrollObserver(hasMore);
 }
 
@@ -1003,6 +1004,150 @@ async function loadOrders() {
   }
 }
 
+// ============================================================
+// Quick-view + Reviews
+// ============================================================
+let QV_PRODUCT = null;
+let QV_RATING  = 0;
+
+function starsHtml(n, total) {
+  const filled = Math.round(n);
+  return '★'.repeat(filled) + '☆'.repeat(5 - filled) +
+    (total != null ? ` <span style="color:#999;font-size:.8em">(${total})</span>` : '');
+}
+
+async function openQuickView(productId) {
+  const p = ALL_PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+  QV_PRODUCT = p;
+  QV_RATING  = 0;
+
+  // Populate header
+  const img = document.getElementById('qvImg');
+  img.style.backgroundImage = p.image_url ? `url('${p.image_url}')` : '';
+  img.innerHTML = !p.image_url ? `<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.25">${ICON.flower}</div>` : '';
+  document.getElementById('qvCat').textContent  = p.category || '';
+  document.getElementById('qvProductName').textContent = p.name;
+  document.getElementById('qvDesc').textContent = p.description || '';
+  const onSale = p.sale_price != null && p.sale_price < p.price;
+  document.getElementById('qvPrice').innerHTML = onSale
+    ? `<span style="text-decoration:line-through;color:#bbb;font-weight:400">${fmt(p.price)}</span> ${fmt(p.sale_price)}`
+    : fmt(p.price);
+  document.getElementById('qvAddBtn').disabled = !p.in_stock;
+  document.getElementById('qvAddBtn').textContent = p.in_stock ? 'Add to Cart' : 'Out of Stock';
+  document.getElementById('qvStarsSummary').innerHTML = '';
+  document.getElementById('reviewError').textContent = '';
+  document.getElementById('reviewerName').value = '';
+  document.getElementById('reviewBody').value   = '';
+  resetStarPicker();
+
+  // Open
+  document.getElementById('qvOverlay').classList.add('open');
+  requestAnimationFrame(() => document.getElementById('qvModal').classList.add('open'));
+
+  // Load reviews
+  loadReviews(productId);
+}
+
+function closeQuickView() {
+  document.getElementById('qvModal').classList.remove('open');
+  document.getElementById('qvOverlay').classList.remove('open');
+  QV_PRODUCT = null;
+}
+
+async function loadReviews(productId) {
+  const listEl = document.getElementById('qvReviewsList');
+  const summaryEl = document.getElementById('qvStarsSummary');
+  listEl.innerHTML = '<div class="qv-reviews-loading">Loading reviews…</div>';
+  if (!SUPABASE_READY) {
+    listEl.innerHTML = '<div class="no-reviews">Reviews unavailable offline.</div>';
+    return;
+  }
+  const { data, error } = await supabaseClient
+    .from('product_reviews')
+    .select('*')
+    .eq('product_id', productId)
+    .eq('approved', true)
+    .order('created_at', { ascending: false });
+  if (error || !data) { listEl.innerHTML = '<div class="no-reviews">Could not load reviews.</div>'; return; }
+  if (!data.length) { listEl.innerHTML = '<div class="no-reviews">No reviews yet — be the first!</div>'; summaryEl.innerHTML = ''; return; }
+  const avg = data.reduce((s, r) => s + r.rating, 0) / data.length;
+  summaryEl.innerHTML = starsHtml(avg, data.length) + ` &nbsp;${avg.toFixed(1)} / 5`;
+  listEl.innerHTML = data.map(r => `
+    <div class="review-item">
+      <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+      <div class="review-author">${escapeHtml(r.reviewer_name || 'Customer')}</div>
+      ${r.body ? `<div class="review-body">${escapeHtml(r.body)}</div>` : ''}
+      <div class="review-date">${new Date(r.created_at).toLocaleDateString('en-KE', {day:'numeric',month:'short',year:'numeric'})}</div>
+    </div>
+  `).join('');
+}
+
+function resetStarPicker() {
+  QV_RATING = 0;
+  document.querySelectorAll('.star-pick').forEach(b => b.classList.remove('selected'));
+}
+
+function initQuickView() {
+  // Wire star picker
+  const stars = document.querySelectorAll('.star-pick');
+  stars.forEach(btn => {
+    btn.addEventListener('click', () => {
+      QV_RATING = parseInt(btn.dataset.v);
+      stars.forEach(b => b.classList.toggle('selected', parseInt(b.dataset.v) <= QV_RATING));
+    });
+  });
+
+  // Submit review
+  document.getElementById('submitReviewBtn').addEventListener('click', async () => {
+    const errEl = document.getElementById('reviewError');
+    errEl.textContent = '';
+    if (!QV_PRODUCT) return;
+    if (!QV_RATING) { errEl.textContent = 'Please select a star rating.'; return; }
+    const name = document.getElementById('reviewerName').value.trim();
+    const body = document.getElementById('reviewBody').value.trim();
+    if (!name) { errEl.textContent = 'Please enter your name.'; return; }
+    const btn = document.getElementById('submitReviewBtn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    if (!SUPABASE_READY) { errEl.textContent = 'Not connected — try again later.'; btn.disabled = false; btn.textContent = 'Submit review'; return; }
+    const { error } = await supabaseClient.from('product_reviews').insert({
+      product_id: QV_PRODUCT.id,
+      rating: QV_RATING,
+      reviewer_name: name,
+      body: body || null,
+      approved: false,
+    });
+    btn.disabled = false; btn.textContent = 'Submit review';
+    if (error) { errEl.textContent = 'Failed to submit — please try again.'; return; }
+    document.getElementById('reviewerName').value = '';
+    document.getElementById('reviewBody').value   = '';
+    resetStarPicker();
+    showToast('Thank you! Your review is pending approval.');
+  });
+
+  // Add to cart from quick-view
+  document.getElementById('qvAddBtn').addEventListener('click', () => {
+    if (QV_PRODUCT) { addToCart(QV_PRODUCT.id); closeQuickView(); }
+  });
+
+  // Close
+  document.getElementById('qvClose').addEventListener('click', closeQuickView);
+  document.getElementById('qvOverlay').addEventListener('click', closeQuickView);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQuickView(); });
+}
+
+// Wire product cards to open quick-view on click (but not on button clicks)
+function wireQuickView(container) {
+  container.querySelectorAll('.product-card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', e => {
+      if (e.target.closest('button')) return; // let add/wish buttons fire normally
+      const addBtn = card.querySelector('.add-btn');
+      if (addBtn && addBtn.dataset.id) openQuickView(addBtn.dataset.id);
+    });
+  });
+}
+
 function initAccount() {
   if (!SUPABASE_READY) return;
 
@@ -1185,6 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
   loadPromoCodes();
   loadBlogPosts();
+  initQuickView();
   initAccount();
   initWishlist();
   initNewsletter();

@@ -407,20 +407,7 @@ function showToast(msg) {
 checkSession();
 
 // ============================================================
-// Tab switching
-// ============================================================
-document.querySelectorAll('.admin-tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
-    btn.classList.add('active');
-    const panel = document.getElementById('panel' + btn.dataset.panel.charAt(0).toUpperCase() + btn.dataset.panel.slice(1));
-    if (panel) panel.style.display = 'block';
-    if (btn.dataset.panel === 'promos') loadPromoCodes();
-    if (btn.dataset.panel === 'blog') loadBlogPosts();
-    if (btn.dataset.panel === 'orders') loadOrders();
-  });
-});
+// Tab switching handled at bottom of file
 
 // ============================================================
 // PROMO CODES
@@ -707,5 +694,77 @@ async function loadOrders() {
     </tr>`;
   }).join('');
 }
+
+// ===== Reviews panel =====
+async function loadReviews() {
+  const tbody = document.getElementById('reviewsTableBody');
+  const countEl = document.getElementById('reviewsCount');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" class="muted-cell">Loading…</td></tr>';
+  const { data, error } = await supabaseClient
+    .from('product_reviews')
+    .select('*, products(name)')
+    .order('created_at', { ascending: false });
+  if (error || !data) {
+    tbody.innerHTML = `<tr><td colspan="7" class="muted-cell">Error: ${error?.message}</td></tr>`;
+    return;
+  }
+  if (countEl) countEl.textContent = `${data.length} review${data.length !== 1 ? 's' : ''}`;
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="muted-cell">No reviews yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(r => {
+    const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const product = r.products?.name || '—';
+    const date = new Date(r.created_at).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' });
+    const status = r.approved
+      ? '<span class="pill pill-green">Approved</span>'
+      : '<span class="pill pill-yellow">Pending</span>';
+    const approveBtn = !r.approved
+      ? `<button class="action-btn" onclick="approveReview('${r.id}')">Approve</button>`
+      : '';
+    return `<tr>
+      <td style="font-size:.83rem;max-width:120px">${escapeHtml(product)}</td>
+      <td style="color:#f4a400">${stars}</td>
+      <td>${escapeHtml(r.reviewer_name || '—')}</td>
+      <td style="max-width:200px;white-space:normal;font-size:.83rem">${escapeHtml(r.body || '—')}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${date}</td>
+      <td>${status}</td>
+      <td class="action-cell">
+        ${approveBtn}
+        <button class="action-btn action-btn--danger" onclick="deleteReview('${r.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.approveReview = async (id) => {
+  await supabaseClient.from('product_reviews').update({ approved: true }).eq('id', id);
+  showToast('Review approved ✓');
+  loadReviews();
+};
+window.deleteReview = async (id) => {
+  if (!confirm('Delete this review?')) return;
+  await supabaseClient.from('product_reviews').delete().eq('id', id);
+  showToast('Review deleted');
+  loadReviews();
+};
+
+// Add reviews panel to tab switching
+document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+    btn.classList.add('active');
+    const panelId = 'panel' + btn.dataset.panel.charAt(0).toUpperCase() + btn.dataset.panel.slice(1);
+    const panel = document.getElementById(panelId);
+    if (panel) panel.style.display = 'block';
+    if (btn.dataset.panel === 'promos')   loadPromoCodes();
+    if (btn.dataset.panel === 'blog')     loadBlogPosts();
+    if (btn.dataset.panel === 'orders')   loadOrders();
+    if (btn.dataset.panel === 'reviews')  loadReviews();
+  });
+});
 
 })();

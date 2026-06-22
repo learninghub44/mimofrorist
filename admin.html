@@ -62,6 +62,7 @@
       <button class="admin-tab-btn" data-panel="promos">🎟 Promo Codes</button>
       <button class="admin-tab-btn" data-panel="blog">📝 Blog Posts</button>
       <button class="admin-tab-btn" data-panel="orders">📦 Orders</button>
+      <button class="admin-tab-btn" data-panel="reviews">⭐ Reviews</button>
     </nav>
 
     <!-- ===== PRODUCTS PANEL ===== -->
@@ -166,6 +167,31 @@
           </thead>
           <tbody id="ordersTableBody">
             <tr><td colspan="6" class="muted-cell">Loading orders…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel" id="panelReviews" style="display:none">
+      <div class="admin-toolbar">
+        <h2>Reviews</h2>
+        <span id="reviewsCount" class="admin-search-count"></span>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Stars</th>
+              <th>Name</th>
+              <th>Comment</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reviewsTableBody">
+            <tr><td colspan="7" class="muted-cell">Loading reviews…</td></tr>
           </tbody>
         </table>
       </div>

@@ -784,6 +784,51 @@
   </div>
 </aside>
 
+<!-- Product quick-view + reviews modal -->
+<div class="qv-overlay" id="qvOverlay"></div>
+<div class="qv-modal" id="qvModal" role="dialog" aria-modal="true" aria-labelledby="qvProductName">
+  <button class="qv-close" id="qvClose" aria-label="Close">
+    <svg class="icon" style="width:18px;height:18px"><use href="#icon-close"/></svg>
+  </button>
+  <div class="qv-img" id="qvImg"></div>
+  <div class="qv-body">
+    <div class="qv-cat" id="qvCat"></div>
+    <h2 class="qv-name" id="qvProductName"></h2>
+    <div class="qv-price" id="qvPrice"></div>
+    <p class="qv-desc" id="qvDesc"></p>
+    <div class="qv-stars-summary" id="qvStarsSummary"></div>
+
+    <button class="btn btn-rose qv-add-btn" id="qvAddBtn">
+      <svg class="icon" style="width:16px;height:16px"><use href="#icon-bag"/></svg>
+      Add to Cart
+    </button>
+
+    <!-- Reviews list -->
+    <div class="qv-reviews" id="qvReviews">
+      <h3 class="qv-reviews-title">Customer reviews</h3>
+      <div class="qv-reviews-list" id="qvReviewsList">
+        <div class="qv-reviews-loading">Loading reviews…</div>
+      </div>
+    </div>
+
+    <!-- Leave a review -->
+    <div class="qv-review-form" id="qvReviewForm">
+      <h3 class="qv-reviews-title">Leave a review</h3>
+      <div class="star-picker" id="starPicker" role="group" aria-label="Rating">
+        <button class="star-pick" data-v="1" aria-label="1 star">★</button>
+        <button class="star-pick" data-v="2" aria-label="2 stars">★</button>
+        <button class="star-pick" data-v="3" aria-label="3 stars">★</button>
+        <button class="star-pick" data-v="4" aria-label="4 stars">★</button>
+        <button class="star-pick" data-v="5" aria-label="5 stars">★</button>
+      </div>
+      <input class="qv-review-input" id="reviewerName" type="text" placeholder="Your name" maxlength="60">
+      <textarea class="qv-review-input" id="reviewBody" rows="3" placeholder="Share your experience…" maxlength="400"></textarea>
+      <div class="qv-review-error" id="reviewError"></div>
+      <button class="btn btn-rose" id="submitReviewBtn">Submit review</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <svg class="icon" style="width:16px;height:16px"><use href="#icon-check"/></svg>
   <span id="toastMsg"></span>
