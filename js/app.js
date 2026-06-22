@@ -401,7 +401,11 @@ function initUI() {
   // Escape key closes whichever overlay is open
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (drawer.classList.contains('open')) closeDrawer();
+    const searchOverlay = document.getElementById('searchOverlay');
+    if (searchOverlay && searchOverlay.classList.contains('open')) {
+      searchOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    } else if (drawer.classList.contains('open')) closeDrawer();
     else if (navLinks && navLinks.classList.contains('open')) closeMenu();
   });
 
@@ -482,10 +486,82 @@ function initFaqAccordion() {
   });
 }
 
+// ---------- Search ----------
+function initSearch() {
+  const searchBtn = document.getElementById('searchBtn');
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchClose = document.getElementById('searchClose');
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+  if (!searchBtn || !searchOverlay || !searchInput || !searchResults) return;
+
+  function openSearch() {
+    searchOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => searchInput.focus(), 50);
+    renderSearchResults('');
+  }
+  function closeSearch() {
+    searchOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    searchInput.value = '';
+  }
+
+  function renderSearchResults(term) {
+    const q = term.trim().toLowerCase();
+    if (!q) {
+      searchResults.innerHTML = `<div class="search-hint">Start typing to search our flowers and gifts...</div>`;
+      return;
+    }
+    const matches = ALL_PRODUCTS.filter(p => (p.name || '').toLowerCase().includes(q)).slice(0, 20);
+    if (!matches.length) {
+      searchResults.innerHTML = `<div class="search-empty-state">No products match "${escapeHtml(term.trim())}". Try a different search, or message us on WhatsApp.</div>`;
+      return;
+    }
+    searchResults.innerHTML = matches.map(p => `
+      <div class="search-result-item" data-id="${p.id}" data-cat="${escapeHtml(p.category || '')}">
+        <div class="search-result-thumb" ${p.image_url ? `style="background-image:url('${p.image_url}')"` : ''}>
+          ${!p.image_url ? ICON.flower : ''}
+        </div>
+        <div class="search-result-info">
+          <div class="search-result-name">${escapeHtml(p.name)}</div>
+          <div class="search-result-cat">${escapeHtml(p.category || '')}</div>
+        </div>
+        <div class="search-result-price">${fmt(p.price)}</div>
+      </div>
+    `).join('');
+
+    searchResults.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('click', () => {
+        ACTIVE_CATEGORY = item.dataset.cat || 'All';
+        visibleCount = PRODUCTS_PER_BATCH;
+        buildCategoryFilters();
+        renderProducts();
+        closeSearch();
+        document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  }
+
+  let debounce;
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(debounce);
+    const value = e.target.value;
+    debounce = setTimeout(() => renderSearchResults(value), 150);
+  });
+
+  searchBtn.addEventListener('click', openSearch);
+  if (searchClose) searchClose.addEventListener('click', closeSearch);
+  searchOverlay.addEventListener('click', (e) => {
+    if (e.target === searchOverlay) closeSearch();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initUI(); // menu + cart drawer wiring — must always run, independent of data load
   initHeroSlider();
   initFaqAccordion();
+  initSearch();
   try {
     loadProducts();
   } catch (err) {
