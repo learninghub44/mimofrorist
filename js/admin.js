@@ -326,4 +326,225 @@ function showToast(msg) {
 
 checkSession();
 
+// ============================================================
+// Tab switching
+// ============================================================
+document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+    btn.classList.add('active');
+    const panel = document.getElementById('panel' + btn.dataset.panel.charAt(0).toUpperCase() + btn.dataset.panel.slice(1));
+    if (panel) panel.style.display = 'block';
+    if (btn.dataset.panel === 'promos') loadPromoCodes();
+    if (btn.dataset.panel === 'blog') loadBlogPosts();
+  });
+});
+
+// ============================================================
+// PROMO CODES
+// ============================================================
+async function loadPromoCodes() {
+  const tbody = document.getElementById('promoTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="muted-cell">Loading…</td></tr>';
+  const { data, error } = await supabaseClient
+    .from('promo_codes')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error || !data) {
+    tbody.innerHTML = '<tr><td colspan="7" class="muted-cell">Could not load promo codes.</td></tr>';
+    return;
+  }
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="muted-cell">No promo codes yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(p => {
+    const val = p.type === 'percent' ? `${p.value}%` : `KES ${p.value}`;
+    const exp = p.expires_at ? new Date(p.expires_at).toLocaleDateString('en-KE') : '—';
+    const pill = p.active
+      ? '<span class="pill pill-green">Active</span>'
+      : '<span class="pill pill-grey">Off</span>';
+    return `<tr>
+      <td><strong>${p.code}</strong></td>
+      <td>${p.type === 'percent' ? 'Percent' : 'Flat'}</td>
+      <td>${val}</td>
+      <td>${p.label || '—'}</td>
+      <td>${exp}</td>
+      <td>${pill}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editPromo('${p.id}')">Edit</button>
+        <button class="btn btn-sm btn-outline" style="color:#c66c6c;margin-left:4px" onclick="deletePromo('${p.id}')">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let PROMO_EDITING = null;
+function openPromoModal(promo = null) {
+  PROMO_EDITING = promo;
+  document.getElementById('promoId').value = promo ? promo.id : '';
+  document.getElementById('promoCode').value = promo ? promo.code : '';
+  document.getElementById('promoType').value = promo ? promo.type : 'percent';
+  document.getElementById('promoValue').value = promo ? promo.value : '';
+  document.getElementById('promoLabel').value = promo ? (promo.label || '') : '';
+  document.getElementById('promoExpires').value = promo && promo.expires_at
+    ? new Date(promo.expires_at).toISOString().slice(0,16) : '';
+  document.getElementById('promoActive').checked = promo ? promo.active : true;
+  document.getElementById('promoFormError').textContent = '';
+  document.getElementById('promoModalTitle').textContent = promo ? 'Edit Promo Code' : 'New Promo Code';
+  document.getElementById('promoModal').classList.add('is-open');
+  document.getElementById('promoModalOverlay').classList.add('is-open');
+}
+function closePromoModal() {
+  document.getElementById('promoModal').classList.remove('is-open');
+  document.getElementById('promoModalOverlay').classList.remove('is-open');
+}
+
+window.editPromo = async (id) => {
+  const { data } = await supabaseClient.from('promo_codes').select('*').eq('id', id).single();
+  if (data) openPromoModal(data);
+};
+window.deletePromo = async (id) => {
+  if (!confirm('Delete this promo code?')) return;
+  await supabaseClient.from('promo_codes').delete().eq('id', id);
+  showToast('Promo code deleted');
+  loadPromoCodes();
+};
+
+document.getElementById('newPromoBtn').addEventListener('click', () => openPromoModal());
+document.getElementById('promoModalClose').addEventListener('click', closePromoModal);
+document.getElementById('promoCancelBtn').addEventListener('click', closePromoModal);
+document.getElementById('promoModalOverlay').addEventListener('click', closePromoModal);
+
+document.getElementById('promoForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('promoFormError');
+  errEl.textContent = '';
+  const payload = {
+    code: document.getElementById('promoCode').value.trim().toUpperCase(),
+    type: document.getElementById('promoType').value,
+    value: parseFloat(document.getElementById('promoValue').value),
+    label: document.getElementById('promoLabel').value.trim() || null,
+    expires_at: document.getElementById('promoExpires').value || null,
+    active: document.getElementById('promoActive').checked,
+  };
+  if (!payload.code || !payload.value) { errEl.textContent = 'Code and value are required.'; return; }
+  const btn = document.getElementById('promoSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  let error;
+  if (PROMO_EDITING) {
+    ({ error } = await supabaseClient.from('promo_codes').update(payload).eq('id', PROMO_EDITING.id));
+  } else {
+    ({ error } = await supabaseClient.from('promo_codes').insert(payload));
+  }
+  btn.disabled = false; btn.textContent = 'Save code';
+  if (error) { errEl.textContent = error.message; return; }
+  showToast(PROMO_EDITING ? 'Promo code updated' : 'Promo code created');
+  closePromoModal();
+  loadPromoCodes();
+});
+
+// ============================================================
+// BLOG POSTS
+// ============================================================
+async function loadBlogPosts() {
+  const tbody = document.getElementById('blogTableBody');
+  tbody.innerHTML = '<tr><td colspan="5" class="muted-cell">Loading…</td></tr>';
+  const { data, error } = await supabaseClient
+    .from('blog_posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error || !data) {
+    tbody.innerHTML = '<tr><td colspan="5" class="muted-cell">Could not load posts.</td></tr>';
+    return;
+  }
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="muted-cell">No posts yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(p => {
+    const date = new Date(p.created_at).toLocaleDateString('en-KE', { day:'numeric', month:'short', year:'numeric' });
+    const pill = p.published
+      ? '<span class="pill pill-green">Live</span>'
+      : '<span class="pill pill-grey">Draft</span>';
+    return `<tr>
+      <td>${p.title}</td>
+      <td>${p.category || '—'}</td>
+      <td>${pill}</td>
+      <td>${date}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editBlogPost('${p.id}')">Edit</button>
+        <button class="btn btn-sm btn-outline" style="color:#c66c6c;margin-left:4px" onclick="deleteBlogPost('${p.id}')">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let BLOG_EDITING = null;
+function openBlogModal(post = null) {
+  BLOG_EDITING = post;
+  document.getElementById('blogId').value = post ? post.id : '';
+  document.getElementById('blogTitle').value = post ? post.title : '';
+  document.getElementById('blogExcerpt').value = post ? (post.excerpt || '') : '';
+  document.getElementById('blogCategory').value = post ? (post.category || '') : '';
+  document.getElementById('blogImageUrl').value = post ? (post.image_url || '') : '';
+  document.getElementById('blogLinkLabel').value = post ? (post.link_label || 'Read more') : 'Read more';
+  document.getElementById('blogLinkHref').value = post ? (post.link_href || '#shop') : '#shop';
+  document.getElementById('blogPublished').checked = post ? post.published : true;
+  document.getElementById('blogFormError').textContent = '';
+  document.getElementById('blogModalTitle').textContent = post ? 'Edit Blog Post' : 'New Blog Post';
+  document.getElementById('blogModal').classList.add('is-open');
+  document.getElementById('blogModalOverlay').classList.add('is-open');
+}
+function closeBlogModal() {
+  document.getElementById('blogModal').classList.remove('is-open');
+  document.getElementById('blogModalOverlay').classList.remove('is-open');
+}
+
+window.editBlogPost = async (id) => {
+  const { data } = await supabaseClient.from('blog_posts').select('*').eq('id', id).single();
+  if (data) openBlogModal(data);
+};
+window.deleteBlogPost = async (id) => {
+  if (!confirm('Delete this blog post?')) return;
+  await supabaseClient.from('blog_posts').delete().eq('id', id);
+  showToast('Post deleted');
+  loadBlogPosts();
+};
+
+document.getElementById('newBlogBtn').addEventListener('click', () => openBlogModal());
+document.getElementById('blogModalClose').addEventListener('click', closeBlogModal);
+document.getElementById('blogCancelBtn').addEventListener('click', closeBlogModal);
+document.getElementById('blogModalOverlay').addEventListener('click', closeBlogModal);
+
+document.getElementById('blogForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('blogFormError');
+  errEl.textContent = '';
+  const payload = {
+    title: document.getElementById('blogTitle').value.trim(),
+    excerpt: document.getElementById('blogExcerpt').value.trim() || null,
+    category: document.getElementById('blogCategory').value.trim() || null,
+    image_url: document.getElementById('blogImageUrl').value.trim() || null,
+    link_label: document.getElementById('blogLinkLabel').value.trim() || 'Read more',
+    link_href: document.getElementById('blogLinkHref').value.trim() || '#shop',
+    published: document.getElementById('blogPublished').checked,
+  };
+  if (!payload.title) { errEl.textContent = 'Title is required.'; return; }
+  const btn = document.getElementById('blogSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  let error;
+  if (BLOG_EDITING) {
+    ({ error } = await supabaseClient.from('blog_posts').update(payload).eq('id', BLOG_EDITING.id));
+  } else {
+    ({ error } = await supabaseClient.from('blog_posts').insert(payload));
+  }
+  btn.disabled = false; btn.textContent = 'Save post';
+  if (error) { errEl.textContent = error.message; return; }
+  showToast(BLOG_EDITING ? 'Post updated' : 'Post published');
+  closeBlogModal();
+  loadBlogPosts();
+});
+
 })();

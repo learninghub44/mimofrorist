@@ -22,7 +22,8 @@ let CART = JSON.parse(localStorage.getItem('mimoh_cart') || '[]');
 let WISHLIST = JSON.parse(localStorage.getItem('mimoh_wishlist') || '[]');
 
 // ---- Voucher codes (admin can add more here) ----
-const VOUCHER_CODES = {
+// Promo codes — loaded from Supabase, fallback to hardcoded
+let VOUCHER_CODES = {
   'MIMO10':   { type: 'percent', value: 10, label: '10% off' },
   'MIMO20':   { type: 'percent', value: 20, label: '20% off' },
   'FLOWERS':  { type: 'percent', value: 15, label: '15% off' },
@@ -30,6 +31,20 @@ const VOUCHER_CODES = {
   'WEDDING':  { type: 'flat',    value: 500, label: 'KES 500 off' },
   'NAIROBI':  { type: 'percent', value: 5,  label: '5% off' },
 };
+
+async function loadPromoCodes() {
+  if (!SUPABASE_READY) return;
+  try {
+    const { data } = await supabaseClient
+      .from('promo_codes')
+      .select('code,type,value,label')
+      .eq('active', true);
+    if (data && data.length) {
+      VOUCHER_CODES = {};
+      data.forEach(r => { VOUCHER_CODES[r.code.toUpperCase()] = { type: r.type, value: r.value, label: r.label }; });
+    }
+  } catch { /* keep fallback */ }
+}
 let APPLIED_VOUCHER = null; // { code, type, value, label }
 const PRODUCTS_PER_BATCH = 24;
 let visibleCount = PRODUCTS_PER_BATCH;
@@ -747,6 +762,57 @@ function renderWishlistDrawer() {
   });
 }
 
+// ===== BLOG LOADER =====
+async function loadBlogPosts() {
+  const grid = document.getElementById('blogGrid');
+  if (!grid) return;
+
+  const fallback = [
+    { title: 'How to Keep Cut Flowers Fresh for 2 Weeks',
+      excerpt: 'Simple tricks — from water temperature to stem cutting angles — that double the vase life of your blooms.',
+      category: 'Flower Care', image_url: 'images/event-birthday.jpg',
+      link_label: 'Ask our florist', link_href: '#contact' },
+    { title: '2025 Wedding Flower Trends in Nairobi',
+      excerpt: 'From tropical lush greens to minimalist white arches — what Nairobi brides are booking this season.',
+      category: 'Wedding', image_url: 'images/event-wedding.jpg',
+      link_label: 'See our packages', link_href: '#events' },
+    { title: 'What Flowers to Send for Every Occasion',
+      excerpt: 'Roses for romance, lilies for sympathy, sunflowers for joy — a quick guide to never getting it wrong.',
+      category: 'Gifting', image_url: 'images/event-funeral.jpg',
+      link_label: 'Shop by occasion', link_href: '#shop' },
+  ];
+
+  let posts = fallback;
+  if (SUPABASE_READY) {
+    try {
+      const { data } = await supabaseClient
+        .from('blog_posts')
+        .select('title,excerpt,category,image_url,link_label,link_href,created_at')
+        .eq('published', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      if (data && data.length) posts = data;
+    } catch { /* use fallback */ }
+  }
+
+  grid.innerHTML = posts.map(p => {
+    const month = p.created_at
+      ? new Date(p.created_at).toLocaleDateString('en-KE', { month: 'long', year: 'numeric' })
+      : '';
+    return `<article class="blog-card">
+      <div class="blog-img" style="background-image:url('${p.image_url || 'images/event-birthday.jpg'}')">
+        <span class="blog-cat">${p.category || ''}</span>
+      </div>
+      <div class="blog-body">
+        ${month ? `<div class="blog-meta">${month}</div>` : ''}
+        <h3 class="blog-title">${p.title}</h3>
+        <p class="blog-excerpt">${p.excerpt || ''}</p>
+        <a href="${p.link_href || '#shop'}" class="blog-link">${p.link_label || 'Read more'} <svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
+      </div>
+    </article>`;
+  }).join('');
+}
+
 // ===== ACCOUNT MODULE =====
 const ACCT = { user: null, session: null };
 
@@ -1088,6 +1154,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeroSlider();
   initFaqAccordion();
   initSearch();
+  loadPromoCodes();
+  loadBlogPosts();
   initAccount();
   initWishlist();
   initNewsletter();

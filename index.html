@@ -7,7 +7,7 @@
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=12">
+<link rel="stylesheet" href="css/style.css?v=13">
 </head>
 <body>
 
@@ -551,40 +551,11 @@
       <h2>From Our Florists</h2>
       <p class="section-sub">Flower care tips, event ideas, and seasonal guides from the Mimo team.</p>
     </div>
-    <div class="blog-grid">
-      <article class="blog-card">
-        <div class="blog-img" style="background-image:url('images/birthday.jpg')">
-          <span class="blog-cat">Flower Care</span>
-        </div>
-        <div class="blog-body">
-          <div class="blog-meta">June 2025 · 3 min read</div>
-          <h3 class="blog-title">How to Keep Cut Flowers Fresh for 2 Weeks</h3>
-          <p class="blog-excerpt">Simple tricks — from water temperature to stem cutting angles — that double the vase life of your blooms.</p>
-          <a href="#contact" class="blog-link">Ask our florist <svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
-        </div>
-      </article>
-      <article class="blog-card">
-        <div class="blog-img" style="background-image:url('images/wedding.jpg')">
-          <span class="blog-cat">Wedding</span>
-        </div>
-        <div class="blog-body">
-          <div class="blog-meta">May 2025 · 5 min read</div>
-          <h3 class="blog-title">2025 Wedding Flower Trends in Nairobi</h3>
-          <p class="blog-excerpt">From tropical lush greens to minimalist white arches — what Nairobi brides are booking this season.</p>
-          <a href="#events" class="blog-link">See our packages <svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
-        </div>
-      </article>
-      <article class="blog-card">
-        <div class="blog-img" style="background-image:url('images/birthday.jpg')">
-          <span class="blog-cat">Gifting</span>
-        </div>
-        <div class="blog-body">
-          <div class="blog-meta">April 2025 · 4 min read</div>
-          <h3 class="blog-title">What Flowers to Send for Every Occasion</h3>
-          <p class="blog-excerpt">Roses for romance, lilies for sympathy, sunflowers for joy — a quick guide to never getting it wrong.</p>
-          <a href="#shop" class="blog-link">Shop by occasion <svg class="icon" style="width:14px;height:14px"><use href="#icon-plus"/></svg></a>
-        </div>
-      </article>
+    <div class="blog-grid" id="blogGrid">
+      <!-- Posts loaded dynamically from Supabase -->
+      <article class="blog-card blog-skeleton"></article>
+      <article class="blog-card blog-skeleton"></article>
+      <article class="blog-card blog-skeleton"></article>
     </div>
   </div>
 </section>
@@ -835,6 +806,6 @@
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=11"></script>
-<script src="js/app.js?v=12"></script>
+<script src="js/app.js?v=13"></script>
 </body>
 </html>

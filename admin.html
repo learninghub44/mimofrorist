@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin · Mimohflorist & Gift Shop</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=11">
-<link rel="stylesheet" href="css/admin.css?v=4">
+<link rel="stylesheet" href="css/style.css?v=12">
+<link rel="stylesheet" href="css/admin.css?v=5">
 </head>
 <body class="admin-body">
 
@@ -55,34 +55,96 @@
   </header>
 
   <main class="admin-main">
-    <div class="admin-toolbar">
-      <h2>Products</h2>
-      <button id="newProductBtn" class="btn btn-primary">+ Add product</button>
+
+    <!-- Admin Tab Nav -->
+    <nav class="admin-tabs">
+      <button class="admin-tab-btn active" data-panel="products">🌸 Products</button>
+      <button class="admin-tab-btn" data-panel="promos">🎟 Promo Codes</button>
+      <button class="admin-tab-btn" data-panel="blog">📝 Blog Posts</button>
+    </nav>
+
+    <!-- ===== PRODUCTS PANEL ===== -->
+    <div class="admin-panel" id="panelProducts">
+      <div class="admin-toolbar">
+        <h2>Products</h2>
+        <button id="newProductBtn" class="btn btn-primary">+ Add product</button>
+      </div>
+
+      <div class="admin-search-row">
+        <input type="search" id="productSearch" class="admin-search-input" placeholder="Search products by name…" aria-label="Search products by name">
+        <span id="productSearchCount" class="admin-search-count"></span>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Featured</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody">
+            <tr><td colspan="7" class="muted-cell">Loading products…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="admin-search-row">
-      <input type="search" id="productSearch" class="admin-search-input" placeholder="Search products by name…" aria-label="Search products by name">
-      <span id="productSearchCount" class="admin-search-count"></span>
+    <!-- ===== PROMO CODES PANEL ===== -->
+    <div class="admin-panel" id="panelPromos" style="display:none">
+      <div class="admin-toolbar">
+        <h2>Promo Codes</h2>
+        <button id="newPromoBtn" class="btn btn-primary">+ New code</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Type</th>
+              <th>Value</th>
+              <th>Label</th>
+              <th>Expires</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="promoTableBody">
+            <tr><td colspan="7" class="muted-cell">Loading promo codes…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Featured</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="productTableBody">
-          <tr><td colspan="7" class="muted-cell">Loading products…</td></tr>
-        </tbody>
-      </table>
+    <!-- ===== BLOG POSTS PANEL ===== -->
+    <div class="admin-panel" id="panelBlog" style="display:none">
+      <div class="admin-toolbar">
+        <h2>Blog Posts</h2>
+        <button id="newBlogBtn" class="btn btn-primary">+ New post</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Published</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="blogTableBody">
+            <tr><td colspan="5" class="muted-cell">Loading posts…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </main>
 </div>
 
@@ -159,8 +221,105 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ===== PROMO CODE MODAL ===== -->
+<div class="overlay" id="promoModalOverlay"></div>
+<div class="modal" id="promoModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="promoModalTitle">New Promo Code</h3>
+      <button class="cart-close" id="promoModalClose">✕</button>
+    </div>
+    <form id="promoForm" class="modal-body">
+      <input type="hidden" id="promoId">
+      <label>Code <span style="font-size:.75rem;color:#9a8a80">(uppercase, no spaces)</span>
+        <input type="text" id="promoCode" required placeholder="e.g. SUMMER25" style="text-transform:uppercase">
+      </label>
+      <div class="form-row">
+        <label>Type
+          <select id="promoType" required>
+            <option value="percent">Percentage (%)</option>
+            <option value="flat">Flat (KES)</option>
+          </select>
+        </label>
+        <label>Value
+          <input type="number" id="promoValue" required min="1" step="1" placeholder="e.g. 20">
+        </label>
+      </div>
+      <label>Label <span style="font-size:.75rem;color:#9a8a80">(shown to customer)</span>
+        <input type="text" id="promoLabel" placeholder="e.g. 20% off">
+      </label>
+      <label>Expires <span style="font-size:.75rem;color:#9a8a80">(optional)</span>
+        <input type="datetime-local" id="promoExpires">
+      </label>
+      <div class="form-row form-row-checks">
+        <label class="checkbox-label">
+          <input type="checkbox" id="promoActive" checked> Active
+        </label>
+      </div>
+      <div id="promoFormError" class="form-error"></div>
+      <div class="modal-actions">
+        <button type="button" id="promoCancelBtn" class="btn btn-outline">Cancel</button>
+        <button type="submit" id="promoSaveBtn" class="btn btn-primary">Save code</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== BLOG POST MODAL ===== -->
+<div class="overlay" id="blogModalOverlay"></div>
+<div class="modal" id="blogModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="blogModalTitle">New Blog Post</h3>
+      <button class="cart-close" id="blogModalClose">✕</button>
+    </div>
+    <form id="blogForm" class="modal-body">
+      <input type="hidden" id="blogId">
+      <label>Title
+        <input type="text" id="blogTitle" required placeholder="How to Care for Roses">
+      </label>
+      <label>Excerpt
+        <textarea id="blogExcerpt" rows="3" placeholder="Short summary shown on the homepage"></textarea>
+      </label>
+      <div class="form-row">
+        <label>Category
+          <input type="text" id="blogCategory" placeholder="Flower Care" list="blogCatList">
+          <datalist id="blogCatList">
+            <option value="Flower Care">
+            <option value="Wedding">
+            <option value="Gifting">
+            <option value="Seasonal">
+            <option value="Events">
+          </datalist>
+        </label>
+        <label>Image URL
+          <input type="text" id="blogImageUrl" placeholder="images/event-wedding.jpg">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Link Label
+          <input type="text" id="blogLinkLabel" placeholder="Read more">
+        </label>
+        <label>Link Href
+          <input type="text" id="blogLinkHref" placeholder="#shop">
+        </label>
+      </div>
+      <div class="form-row form-row-checks">
+        <label class="checkbox-label">
+          <input type="checkbox" id="blogPublished" checked> Published
+        </label>
+      </div>
+      <div id="blogFormError" class="form-error"></div>
+      <div class="modal-actions">
+        <button type="button" id="blogCancelBtn" class="btn btn-outline">Cancel</button>
+        <button type="submit" id="blogSaveBtn" class="btn btn-primary">Save post</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=11"></script>
-<script src="js/admin.js?v=4"></script>
+<script src="js/admin.js?v=5"></script>
 </body>
 </html>
