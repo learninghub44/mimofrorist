@@ -7,7 +7,7 @@
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
 
@@ -116,6 +116,10 @@
     <div class="nav-actions">
       <button class="search-btn" id="searchBtn" aria-label="Search products">
         <svg class="icon" style="width:20px;height:20px"><use href="#icon-search"/></svg>
+      </button>
+      <button class="wishlist-btn" id="wishlistBtn" aria-label="Open wishlist">
+        <svg class="icon" style="width:20px;height:20px"><use href="#icon-heart"/></svg>
+        <span class="wishlist-count" id="wishlistCount" style="display:none">0</span>
       </button>
       <button class="cart-btn" id="cartBtn" aria-label="Open cart">
         <svg class="icon" style="width:22px;height:22px"><use href="#icon-bag"/></svg>
@@ -536,6 +540,13 @@
       <div class="brand-name" style="color:var(--gold);margin-bottom:6px">Mimohflorist</div>
       <div class="brand-sub" style="color:var(--gold-muted);margin-bottom:12px">& Gift Shop</div>
       <p>Fresh flowers, gifts and event décor — hand delivered across Nairobi.</p>
+      <!-- Payment badges -->
+      <div class="footer-payments">
+        <span class="pay-badge">M-Pesa</span>
+        <span class="pay-badge">Visa</span>
+        <span class="pay-badge">Mastercard</span>
+        <span class="pay-badge pay-badge--pesapal">Pesapal</span>
+      </div>
     </div>
     <div>
       <h4>Shop</h4>
@@ -561,6 +572,13 @@
           </a>
         </li>
       </ul>
+      <!-- Google Map embed -->
+      <div class="footer-map">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853743508!2d36.70730733632813!3d-1.3028617999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2ske!4v1718000000000!5m2!1sen!2ske"
+          width="100%" height="160" style="border:0;border-radius:10px;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade" title="Our location in Nairobi"></iframe>
+      </div>
     </div>
   </div>
   <div class="foot-bottom">
@@ -569,6 +587,24 @@
     </div>
   </div>
 </footer>
+
+<!-- Wishlist Drawer -->
+<div class="wishlist-overlay" id="wishlistOverlay"></div>
+<aside class="wishlist-drawer" id="wishlistDrawer" aria-label="Wishlist">
+  <div class="cart-head">
+    <h3>❤️ My Wishlist</h3>
+    <button class="cart-close" id="wishlistClose" aria-label="Close wishlist">
+      <svg class="icon" style="width:18px;height:18px"><use href="#icon-close"/></svg>
+    </button>
+  </div>
+  <div class="wishlist-items" id="wishlistItems">
+    <div class="cart-empty">
+      <svg class="icon" style="width:48px;height:48px;color:var(--rose-light)"><use href="#icon-heart"/></svg>
+      <p>Your wishlist is empty</p>
+      <a href="#shop" class="btn btn-primary btn-sm" style="margin-top:12px">Browse Products</a>
+    </div>
+  </div>
+</aside>
 
 <!-- Cart Drawer -->
 <div class="overlay" id="overlay"></div>
@@ -600,6 +636,24 @@
   <span id="toastMsg"></span>
 </div>
 
+<!-- WhatsApp greeting bubble -->
+<div class="wa-bubble" id="waBubble" role="dialog" aria-label="Chat with us">
+  <button class="wa-bubble-close" id="waBubbleClose" aria-label="Dismiss">
+    <svg class="icon" style="width:14px;height:14px"><use href="#icon-close"/></svg>
+  </button>
+  <div class="wa-bubble-head">
+    <span class="wa-bubble-avatar">🌸</span>
+    <div>
+      <div class="wa-bubble-name">Mimo Florist</div>
+      <div class="wa-bubble-status"><span class="wa-bubble-dot"></span> Online</div>
+    </div>
+  </div>
+  <p class="wa-bubble-msg">Hi there 👋<br>Need help choosing flowers? Chat with us on WhatsApp — we reply instantly!</p>
+  <a href="https://wa.me/254782403253?text=Hi%2C%20I'd%20like%20to%20order%20flowers" target="_blank" rel="noopener" class="wa-bubble-cta">
+    <svg class="icon" style="width:16px;height:16px"><use href="#icon-whatsapp"/></svg> Start Chat
+  </a>
+</div>
+
 <a href="https://wa.me/254782403253" target="_blank" rel="noopener" class="whatsapp-float" id="whatsappFloat" aria-label="Chat with us on WhatsApp">
   <span class="whatsapp-float-ring"></span>
   <svg class="icon" style="width:28px;height:28px"><use href="#icon-whatsapp"/></svg>
@@ -607,7 +661,7 @@
 
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/config.js?v=2"></script>
-<script src="js/app.js?v=9"></script>
+<script src="js/config.js?v=10"></script>
+<script src="js/app.js?v=10"></script>
 </body>
 </html>

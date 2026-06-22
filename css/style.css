@@ -344,6 +344,99 @@ h1 .script-accent { font-size: 1.3em; }
   flex-shrink: 0;
 }
 .cart-btn:hover { color: var(--rose); background: var(--rose-soft); }
+/* Wishlist button — mirrors cart-btn */
+.wishlist-btn {
+  position: relative;
+  background: none;
+  border: none;
+  color: var(--plum);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.wishlist-btn:hover { color: var(--rose); background: var(--rose-soft); }
+.wishlist-btn.is-active { color: var(--rose); }
+.wishlist-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--rose);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  pointer-events: none;
+}
+/* Wishlist drawer — mirrors cart-drawer */
+.wishlist-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28,12,16,0.4);
+  z-index: 198;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.wishlist-overlay.is-open { opacity: 1; pointer-events: auto; }
+.wishlist-drawer {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: min(400px, calc(100% - 48px));
+  max-height: 640px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  z-index: 199;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(100% + 40px));
+  opacity: 0;
+  transition: transform 0.38s cubic-bezier(.32,1.1,.58,1), opacity 0.28s;
+  pointer-events: none;
+}
+.wishlist-drawer.is-open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.wishlist-items { flex: 1; overflow-y: auto; padding: 0 20px 20px; }
+/* Wishlist product row */
+.wishlist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.wishlist-item:last-child { border-bottom: none; }
+.wishlist-item-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--rose-soft);
+}
+.wishlist-item-info { flex: 1; min-width: 0; }
+.wishlist-item-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wishlist-item-price { font-size: 0.85rem; color: var(--rose); font-weight: 700; margin-top: 3px; }
+.wishlist-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.wishlist-item-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; transition: background 0.15s, color 0.15s; color: var(--plum);
+}
+.wishlist-item-btn:hover { background: var(--rose-soft); color: var(--rose); border-color: var(--rose-light); }
+.wishlist-item-btn.remove-wish:hover { background: #fff0f3; color: #c00; }
 .cart-count {
   position: absolute;
   top: 2px;
@@ -754,6 +847,29 @@ h1 .script-accent { font-size: 1.3em; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
+/* Wishlist heart on product card */
+.card-wish-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.88);
+  color: var(--plum);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.18s, transform 0.18s, background 0.15s, color 0.15s;
+  z-index: 2;
+}
+.product-card:hover .card-wish-btn { opacity: 1; transform: scale(1); }
+.card-wish-btn:hover { background: #fff; color: var(--rose); }
+.card-wish-btn.is-wished { opacity: 1; transform: scale(1); color: var(--rose); background: #fff; }
 .product-body {
   padding: 20px 20px 16px;
   display: flex;
@@ -1113,6 +1229,33 @@ footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-directi
 footer li { font-size: 0.875rem; }
 footer a { color: rgba(255,255,255,0.6); transition: color 0.15s; }
 footer a:hover { color: var(--gold); }
+.footer-payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.pay-badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.pay-badge:first-child { background: #00a651; color: #fff; border-color: #00a651; }
+.pay-badge--pesapal { background: #1a4db3; color: #fff; border-color: #1a4db3; }
+.footer-map {
+  margin-top: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.footer-map:hover { opacity: 1; }
 .foot-bottom {
   margin-top: 56px;
   padding: 20px 0;
@@ -1442,8 +1585,105 @@ footer a:hover { color: var(--gold); }
   transform: scale(0.8);
   pointer-events: none;
 }
+
+/* WhatsApp greeting bubble */
+.wa-bubble {
+  position: fixed;
+  bottom: 96px;
+  right: 24px;
+  width: 300px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+  padding: 16px;
+  z-index: 300;
+  transform: translateY(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.wa-bubble.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.wa-bubble-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: background 0.2s;
+}
+.wa-bubble-close:hover { background: #ddd; }
+.wa-bubble-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.wa-bubble-avatar {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--rose), var(--plum));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.wa-bubble-name { font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+.wa-bubble-status { font-size: 0.75rem; color: #25d366; display: flex; align-items: center; gap: 5px; }
+.wa-bubble-dot {
+  width: 7px;
+  height: 7px;
+  background: #25d366;
+  border-radius: 50%;
+  display: inline-block;
+  animation: waOnline 1.8s ease-in-out infinite;
+}
+@keyframes waOnline {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.wa-bubble-msg {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.55;
+  margin: 0 0 14px;
+  background: #f0faf3;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.wa-bubble-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px;
+  background: #25d366;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: filter 0.2s, transform 0.15s;
+}
+.wa-bubble-cta:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.wa-bubble-cta:active { transform: scale(0.97); }
 @media (max-width: 560px) {
   .whatsapp-float { right: 16px; bottom: 16px; width: 52px; height: 52px; }
+  .wa-bubble { right: 12px; bottom: 84px; width: calc(100vw - 24px); max-width: 300px; }
 }
 
 /* ===== Responsive ===== */

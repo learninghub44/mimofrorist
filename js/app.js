@@ -19,6 +19,7 @@ try {
 let ALL_PRODUCTS = [];
 let ACTIVE_CATEGORY = 'All';
 let CART = JSON.parse(localStorage.getItem('mimoh_cart') || '[]');
+let WISHLIST = JSON.parse(localStorage.getItem('mimoh_wishlist') || '[]');
 const PRODUCTS_PER_BATCH = 24;
 let visibleCount = PRODUCTS_PER_BATCH;
 let scrollObserver = null;
@@ -114,6 +115,7 @@ function productCardHtml(p) {
   const priceHtml = onSale
     ? `<div class="price-row"><span class="price price-strike">${fmt(p.price)}</span><span class="price price-sale">${fmt(p.sale_price)}</span></div>`
     : `<div class="price">${fmt(p.price)}</div>`;
+  const wished = WISHLIST.some(w => w.id === p.id);
 
   return `
     <div class="product-card">
@@ -121,6 +123,9 @@ function productCardHtml(p) {
         ${badgeText ? `<span class="badge${onSale ? ' badge-sale' : ''}">${escapeHtml(badgeText)}</span>` : ''}
         ${!p.in_stock ? '<div class="oos">Out of Stock</div>' : ''}
         ${!p.image_url ? ICON.flower : ''}
+        <button class="card-wish-btn${wished ? ' is-wished' : ''}" data-id="${p.id}" aria-label="${wished ? 'Remove from wishlist' : 'Add to wishlist'}" title="Wishlist">
+          <svg class="icon" style="width:16px;height:16px"><use href="#icon-heart"/></svg>
+        </button>
       </div>
       <div class="product-body">
         <div class="product-cat">${p.category || ''}</div>
@@ -140,6 +145,12 @@ function productCardHtml(p) {
 function wireAddButtons(container) {
   container.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', () => addToCart(btn.dataset.id));
+  });
+  container.querySelectorAll('.card-wish-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleWishlist(btn.dataset.id);
+    });
   });
 }
 
@@ -557,11 +568,170 @@ function initSearch() {
   });
 }
 
+// ============================================================
+// Wishlist
+// ============================================================
+function saveWishlist() {
+  try { localStorage.setItem('mimoh_wishlist', JSON.stringify(WISHLIST)); } catch {}
+}
+
+function updateWishlistCount() {
+  const countEl = document.getElementById('wishlistCount');
+  const btn = document.getElementById('wishlistBtn');
+  if (!countEl || !btn) return;
+  if (WISHLIST.length > 0) {
+    countEl.textContent = WISHLIST.length;
+    countEl.style.display = 'flex';
+    btn.classList.add('is-active');
+  } else {
+    countEl.style.display = 'none';
+    btn.classList.remove('is-active');
+  }
+}
+
+function toggleWishlist(productId) {
+  const idx = WISHLIST.findIndex(w => w.id === productId);
+  if (idx >= 0) {
+    WISHLIST.splice(idx, 1);
+    showToast('Removed from wishlist');
+  } else {
+    const product = ALL_PRODUCTS.find(p => p.id === productId);
+    if (product) {
+      WISHLIST.push(product);
+      showToast('Added to wishlist ❤️');
+    }
+  }
+  saveWishlist();
+  updateWishlistCount();
+  renderWishlistDrawer();
+  // Update heart button state on visible cards
+  document.querySelectorAll(`.card-wish-btn[data-id="${productId}"]`).forEach(btn => {
+    const wished = WISHLIST.some(w => w.id === productId);
+    btn.classList.toggle('is-wished', wished);
+    btn.setAttribute('aria-label', wished ? 'Remove from wishlist' : 'Add to wishlist');
+  });
+}
+
+function renderWishlistDrawer() {
+  const container = document.getElementById('wishlistItems');
+  if (!container) return;
+  if (WISHLIST.length === 0) {
+    container.innerHTML = `
+      <div class="cart-empty">
+        <svg class="icon" style="width:48px;height:48px;color:var(--rose-light)"><use href="#icon-heart"/></svg>
+        <p>Your wishlist is empty</p>
+        <a href="#shop" class="btn btn-primary btn-sm" style="margin-top:12px">Browse Products</a>
+      </div>`;
+    return;
+  }
+  container.innerHTML = WISHLIST.map(p => `
+    <div class="wishlist-item">
+      <img class="wishlist-item-img" src="${p.image_url || ''}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'">
+      <div class="wishlist-item-info">
+        <div class="wishlist-item-name">${escapeHtml(p.name)}</div>
+        <div class="wishlist-item-price">${fmt(p.sale_price || p.price)}</div>
+      </div>
+      <div class="wishlist-item-actions">
+        <button class="wishlist-item-btn" data-wish-cart="${p.id}" title="Add to cart" aria-label="Add to cart">
+          <svg class="icon" style="width:14px;height:14px"><use href="#icon-bag"/></svg>
+        </button>
+        <button class="wishlist-item-btn remove-wish" data-wish-remove="${p.id}" title="Remove" aria-label="Remove from wishlist">
+          <svg class="icon" style="width:14px;height:14px"><use href="#icon-trash"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('');
+  container.querySelectorAll('[data-wish-cart]').forEach(btn => {
+    btn.addEventListener('click', () => { addToCart(btn.dataset.wishCart); showToast('Added to cart!'); });
+  });
+  container.querySelectorAll('[data-wish-remove]').forEach(btn => {
+    btn.addEventListener('click', () => toggleWishlist(btn.dataset.wishRemove));
+  });
+}
+
+function initWishlist() {
+  const drawer = document.getElementById('wishlistDrawer');
+  const overlay = document.getElementById('wishlistOverlay');
+  const openBtn = document.getElementById('wishlistBtn');
+  const closeBtn = document.getElementById('wishlistClose');
+  if (!drawer || !overlay || !openBtn || !closeBtn) return;
+
+  let wishlistOpen = false;
+
+  function openWishlist() {
+    wishlistOpen = true;
+    drawer.classList.add('is-open');
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    renderWishlistDrawer();
+  }
+  function closeWishlist() {
+    wishlistOpen = false;
+    drawer.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  openBtn.addEventListener('click', () => wishlistOpen ? closeWishlist() : openWishlist());
+  closeBtn.addEventListener('click', closeWishlist);
+  overlay.addEventListener('click', closeWishlist);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && wishlistOpen) closeWishlist(); });
+
+  updateWishlistCount();
+}
+
+function initWaBubble() {
+  const bubble   = document.getElementById('waBubble');
+  const closeBtn = document.getElementById('waBubbleClose');
+  const floatBtn = document.getElementById('whatsappFloat');
+  if (!bubble || !closeBtn || !floatBtn) return;
+
+  // Don't show if user already dismissed this session
+  const dismissed = sessionStorage.getItem('waBubbleDismissed');
+  if (dismissed) return;
+
+  // Show bubble after 4 seconds
+  const showTimer = setTimeout(() => {
+    bubble.classList.add('is-visible');
+  }, 4000);
+
+  function hideBubble() {
+    bubble.classList.remove('is-visible');
+    sessionStorage.setItem('waBubbleDismissed', '1');
+  }
+
+  closeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideBubble();
+  });
+
+  // Clicking the float button toggles the bubble
+  floatBtn.addEventListener('click', (e) => {
+    if (bubble.classList.contains('is-visible')) {
+      hideBubble();
+    } else {
+      bubble.classList.add('is-visible');
+    }
+  });
+
+  // Close bubble when cart or menu opens
+  document.addEventListener('mimoh:cartOpen', hideBubble);
+  document.addEventListener('mimoh:menuOpen', hideBubble);
+
+  // Respect reduced motion — skip auto-show
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    clearTimeout(showTimer);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initUI(); // menu + cart drawer wiring — must always run, independent of data load
   initHeroSlider();
   initFaqAccordion();
   initSearch();
+  initWishlist();
+  initWaBubble();
   try {
     loadProducts();
   } catch (err) {
