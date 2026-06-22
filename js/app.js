@@ -408,8 +408,67 @@ function initUI() {
   updateCartUI();
 }
 
+// ---------- Hero Slider ----------
+function initHeroSlider() {
+  const slider = document.getElementById('heroSlider');
+  if (!slider) return;
+
+  const slides = Array.from(slider.querySelectorAll('.hero-slide'));
+  const dots = Array.from(document.querySelectorAll('.hero-dot'));
+  const prevBtn = document.getElementById('heroPrev');
+  const nextBtn = document.getElementById('heroNext');
+  if (slides.length <= 1) return;
+
+  let current = 0;
+  let timer = null;
+  const AUTO_MS = 6000;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function goTo(index) {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('is-active', i === current));
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  function startAuto() {
+    if (reduceMotion) return;
+    stopAuto();
+    timer = setInterval(next, AUTO_MS);
+  }
+  function stopAuto() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAuto(); }));
+  if (nextBtn) nextBtn.addEventListener('click', () => { next(); startAuto(); });
+  if (prevBtn) prevBtn.addEventListener('click', () => { prev(); startAuto(); });
+
+  const heroSection = document.getElementById('hero');
+  if (heroSection) {
+    heroSection.addEventListener('mouseenter', stopAuto);
+    heroSection.addEventListener('mouseleave', startAuto);
+  }
+
+  // Basic swipe support for touch devices
+  let touchStartX = null;
+  slider.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  slider.addEventListener('touchend', (e) => {
+    if (touchStartX == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); startAuto(); }
+    touchStartX = null;
+  }, { passive: true });
+
+  startAuto();
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initUI(); // menu + cart drawer wiring — must always run, independent of data load
+  initHeroSlider();
   try {
     loadProducts();
   } catch (err) {

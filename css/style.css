@@ -481,6 +481,66 @@ h1 .script-accent { font-size: 1.3em; }
   margin-top: 2px;
 }
 
+/* ===== Hero Slider ===== */
+.hero-slider { position: relative; }
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+}
+.hero-slide.is-active {
+  position: relative;
+  opacity: 1;
+  visibility: visible;
+}
+.hero-dots {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 28px;
+}
+.hero-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--border);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.hero-dot:hover { background: var(--rose-soft); }
+.hero-dot.is-active { background: var(--rose); transform: scale(1.25); }
+.hero-arrow {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  color: var(--plum);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.15s ease;
+}
+.hero:hover .hero-arrow { display: flex; }
+.hero-arrow:hover { background: var(--white); }
+.hero-arrow-prev { left: 4px; }
+.hero-arrow-next { right: 4px; }
+@media (max-width: 768px) {
+  .hero-arrow { display: none !important; }
+  .hero-dots { margin-top: 20px; }
+}
+
 /* ===== Value Strip ===== */
 .value-strip {
   background: var(--plum);

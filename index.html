@@ -7,7 +7,7 @@
 <meta name="description" content="Fresh flowers, bespoke gifts and event décor — hand delivered across Nairobi. Order in minutes on WhatsApp.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=8">
+<link rel="stylesheet" href="css/style.css?v=9">
 </head>
 <body>
 
@@ -67,6 +67,12 @@
   <symbol id="icon-award" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
   </symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="15 18 9 12 15 6"/>
+  </symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="9 18 15 12 9 6"/>
+  </symbol>
 </svg>
 
 <div class="topbar">
@@ -118,45 +124,144 @@
 
 <section id="hero" class="hero">
   <div class="hero-bg-pattern"></div>
-  <div class="container hero-grid">
-    <div class="hero-content">
-      <div class="eyebrow">
-        <span class="eyebrow-line"></span>
-        Nairobi's freshest blooms
-      </div>
-      <h1>Flowers &amp;&nbsp;gifts for every <span class="script-accent">moment</span> that matters.</h1>
-      <p class="lead">From birthdays to boardrooms, weddings to quiet apologies — we hand-arrange every order and deliver across Nairobi the same day.</p>
-      <div class="hero-actions">
-        <a href="#shop" class="btn btn-primary">
-          Shop the collection
-          <svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>
-        </a>
-        <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">
-          <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
-          Order on WhatsApp
-        </a>
-      </div>
+  <div class="hero-slider" id="heroSlider">
 
-    </div>
-    <div class="hero-visual">
-      <div class="hero-card hero-card--main">
-        <div class="hero-img-wrap" id="heroImgWrap">
-          <img src="images/event-birthday.jpg" alt="Pink birthday balloon and floral arch setup">
+    <div class="hero-slide is-active" data-slide="0">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            Nairobi's freshest blooms
+          </div>
+          <h1>Flowers &amp;&nbsp;gifts for every <span class="script-accent">moment</span> that matters.</h1>
+          <p class="lead">From birthdays to boardrooms, weddings to quiet apologies — we hand-arrange every order and deliver across Nairobi the same day.</p>
+          <div class="hero-actions">
+            <a href="#shop" class="btn btn-primary">
+              Shop the collection
+              <svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>
+            </a>
+            <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">
+              <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+              Order on WhatsApp
+            </a>
+          </div>
         </div>
-        <div class="hero-card-tag">
-          <svg class="icon" style="width:14px;height:14px"><use href="#icon-check"/></svg>
-          Fresh &amp; hand-arranged
+        <div class="hero-visual">
+          <div class="hero-card hero-card--main">
+            <div class="hero-img-wrap">
+              <img src="images/event-birthday.jpg" alt="Pink birthday balloon and floral arch setup">
+            </div>
+            <div class="hero-card-tag">
+              <svg class="icon" style="width:14px;height:14px"><use href="#icon-check"/></svg>
+              Fresh &amp; hand-arranged
+            </div>
+          </div>
+          <div class="hero-card hero-card--accent">
+            <svg class="icon" style="width:22px;height:22px;color:var(--gold)"><use href="#icon-leaf"/></svg>
+            <div>
+              <div class="accent-label">Sourced daily</div>
+              <div class="accent-sub">Always fresh, never stored</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="hero-card hero-card--accent">
-        <svg class="icon" style="width:22px;height:22px;color:var(--gold)"><use href="#icon-leaf"/></svg>
-        <div>
-          <div class="accent-label">Sourced daily</div>
-          <div class="accent-sub">Always fresh, never stored</div>
+    </div>
+
+    <div class="hero-slide" data-slide="1">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            Make their day unforgettable
+          </div>
+          <h1>Birthday flowers &amp;&nbsp;gift <span class="script-accent">bundles</span> they'll love.</h1>
+          <p class="lead">Pair fresh bouquets with cake, chocolates and a teddy bear — complete birthday packages, delivered same day.</p>
+          <div class="hero-actions">
+            <a href="#shop" class="btn btn-primary">
+              Shop birthday gifts
+              <svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>
+            </a>
+            <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">
+              <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+              Order on WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card hero-card--main">
+            <div class="hero-img-wrap">
+              <img src="images/event-birthday.jpg" alt="Birthday flower and gift arrangement">
+            </div>
+            <div class="hero-card-tag">
+              <svg class="icon" style="width:14px;height:14px"><use href="#icon-check"/></svg>
+              Complete gift bundles
+            </div>
+          </div>
+          <div class="hero-card hero-card--accent">
+            <svg class="icon" style="width:22px;height:22px;color:var(--gold)"><use href="#icon-gift"/></svg>
+            <div>
+              <div class="accent-label">Add a gift</div>
+              <div class="accent-sub">Cake, chocolates &amp; more</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <div class="hero-slide" data-slide="2">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            Weddings &amp; celebrations
+          </div>
+          <h1>Wedding florals designed around <span class="script-accent">your</span> story.</h1>
+          <p class="lead">Bridal bouquets, table centrepieces and full venue décor — tell us your vision and we'll bring it to life.</p>
+          <div class="hero-actions">
+            <a href="#events" class="btn btn-primary">
+              Get a wedding quote
+              <svg class="icon" style="width:16px;height:16px"><use href="#icon-plus"/></svg>
+            </a>
+            <a href="https://wa.me/254782403253" target="_blank" class="btn btn-whatsapp">
+              <svg class="icon" style="width:18px;height:18px"><use href="#icon-whatsapp"/></svg>
+              Order on WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-card hero-card--main">
+            <div class="hero-img-wrap">
+              <img src="images/event-wedding.jpg" alt="Wedding floral arch and decor setup">
+            </div>
+            <div class="hero-card-tag">
+              <svg class="icon" style="width:14px;height:14px"><use href="#icon-check"/></svg>
+              Bespoke wedding décor
+            </div>
+          </div>
+          <div class="hero-card hero-card--accent">
+            <svg class="icon" style="width:22px;height:22px;color:var(--gold)"><use href="#icon-calendar"/></svg>
+            <div>
+              <div class="accent-label">Custom quote</div>
+              <div class="accent-sub">Within 24 hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
+  <div class="hero-dots" id="heroDots">
+    <button class="hero-dot is-active" data-slide="0" aria-label="Slide 1"></button>
+    <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
+    <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
+  </div>
+  <button class="hero-arrow hero-arrow-prev" id="heroPrev" aria-label="Previous slide">
+    <svg class="icon" style="width:18px;height:18px"><use href="#icon-chevron-left"/></svg>
+  </button>
+  <button class="hero-arrow hero-arrow-next" id="heroNext" aria-label="Next slide">
+    <svg class="icon" style="width:18px;height:18px"><use href="#icon-chevron-right"/></svg>
+  </button>
 </section>
 
 <!-- Value props strip -->
@@ -400,6 +505,6 @@
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="js/config.js?v=2"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>
