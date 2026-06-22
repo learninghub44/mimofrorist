@@ -185,10 +185,23 @@
     <form id="productForm" class="modal-body">
       <input type="hidden" id="productId">
 
-      <label>Photo
-        <input type="file" id="productImageFile" accept="image/*">
-        <img id="imagePreview" class="image-preview" style="display:none;">
-      </label>
+      <label>Photo</label>
+      <div id="imageDropZone" class="image-drop-zone">
+        <div class="drop-zone-inner" id="dropZoneInner">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p>Drag & drop an image here or <span class="drop-browse">browse</span></p>
+          <p class="drop-hint">PNG, JPG, WEBP — max 5 MB</p>
+        </div>
+        <input type="file" id="productImageFile" accept="image/*" class="drop-file-input">
+        <div id="imagePreviewWrap" class="image-preview-wrap" style="display:none;">
+          <img id="imagePreview" class="image-preview">
+          <button type="button" id="clearImageBtn" class="clear-image-btn" title="Remove image">✕</button>
+        </div>
+        <div id="uploadProgress" class="upload-progress" style="display:none;">
+          <div class="upload-progress-bar" id="uploadProgressBar"></div>
+          <span id="uploadProgressLabel">Uploading…</span>
+        </div>
+      </div>
 
       <label>Name
         <input type="text" id="productName" required placeholder="e.g. Rose & Lily Bouquet">
@@ -318,8 +331,23 @@
             <option value="Events">
           </datalist>
         </label>
-        <label>Image URL
-          <input type="text" id="blogImageUrl" placeholder="images/event-wedding.jpg">
+        <label>Image</label>
+          <div id="blogImageDropZone" class="image-drop-zone">
+            <div class="drop-zone-inner" id="blogDropZoneInner">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p>Drag & drop or <span class="drop-browse">browse</span></p>
+            </div>
+            <input type="file" id="blogImageFile" accept="image/*" class="drop-file-input">
+            <div id="blogImagePreviewWrap" class="image-preview-wrap" style="display:none;">
+              <img id="blogImagePreview" class="image-preview">
+              <button type="button" id="clearBlogImageBtn" class="clear-image-btn" title="Remove">✕</button>
+            </div>
+            <div id="blogUploadProgress" class="upload-progress" style="display:none;">
+              <div class="upload-progress-bar" id="blogUploadProgressBar"></div>
+              <span id="blogUploadProgressLabel">Uploading…</span>
+            </div>
+          </div>
+          <input type="hidden" id="blogImageUrl">
         </label>
       </div>
       <div class="form-row">

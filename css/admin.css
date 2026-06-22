@@ -142,3 +142,83 @@
 }
 .pill-green { background: #e8f7ef; color: #2d7a50; }
 .pill-grey  { background: #f0ede9; color: #9a8a80; }
+
+/* ===== Image upload drop zone ===== */
+.image-drop-zone {
+  position: relative;
+  border: 2px dashed var(--rose, #c2185b);
+  border-radius: 10px;
+  background: #fdf0f5;
+  transition: background .2s, border-color .2s;
+  cursor: pointer;
+  overflow: hidden;
+}
+.image-drop-zone.drag-over {
+  background: #fce4ec;
+  border-color: #880e4f;
+}
+.drop-zone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  color: #888;
+  pointer-events: none;
+}
+.drop-zone-inner svg { color: var(--rose, #c2185b); opacity: .7; }
+.drop-zone-inner p { margin: 0; font-size: .85rem; text-align: center; }
+.drop-hint { font-size: .75rem !important; opacity: .6; }
+.drop-browse { color: var(--rose, #c2185b); text-decoration: underline; font-weight: 600; }
+.drop-file-input {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.image-preview-wrap {
+  position: relative;
+  padding: 8px;
+}
+.image-preview {
+  display: block;
+  max-height: 180px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.clear-image-btn {
+  position: absolute;
+  top: 14px; right: 14px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 26px; height: 26px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.clear-image-btn:hover { background: rgba(0,0,0,.8); }
+.upload-progress {
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.upload-progress-bar {
+  height: 6px;
+  background: #f8bbd0;
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+.upload-progress-bar::after {
+  content: '';
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: var(--rose, #c2185b);
+  border-radius: 99px;
+  width: var(--pct, 0%);
+  transition: width .3s;
+}
+#uploadProgressLabel, #blogUploadProgressLabel {
+  font-size: .78rem; color: #888; text-align: center;
+}

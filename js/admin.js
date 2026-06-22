@@ -181,8 +181,14 @@ function openModal(productId = null) {
   form.reset();
   selectedImageFile = null;
   document.getElementById('formError').textContent = '';
-  document.getElementById('imagePreview').style.display = 'none';
   document.getElementById('productId').value = '';
+  // Reset drop zone
+  const previewWrap = document.getElementById('imagePreviewWrap');
+  const preview = document.getElementById('imagePreview');
+  const dropInner = document.getElementById('dropZoneInner');
+  previewWrap.style.display = 'none';
+  preview.src = '';
+  if (dropInner) dropInner.style.display = '';
 
   if (productId) {
     const p = PRODUCTS.find(x => x.id === productId);
@@ -199,9 +205,9 @@ function openModal(productId = null) {
     document.getElementById('productBestSeller').checked = !!p.is_best_seller;
     document.getElementById('productNewArrival').checked = !!p.is_new_arrival;
     if (p.image_url) {
-      const preview = document.getElementById('imagePreview');
       preview.src = p.image_url;
-      preview.style.display = 'block';
+      previewWrap.style.display = 'block';
+      if (dropInner) dropInner.style.display = 'none';
     }
   } else {
     document.getElementById('modalTitle').textContent = 'Add product';
@@ -221,14 +227,88 @@ document.getElementById('modalClose').addEventListener('click', closeModal);
 document.getElementById('cancelBtn').addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', closeModal);
 
-document.getElementById('productImageFile').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  selectedImageFile = file;
-  const preview = document.getElementById('imagePreview');
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
+// ===== Drag-drop image upload (product) =====
+let selectedBlogImageFile = null;
+
+function setupDropZone({ zoneId, fileInputId, previewId, previewWrapId, clearBtnId, progressId, progressBarId, progressLabelId, onFile }) {
+  const zone = document.getElementById(zoneId);
+  const input = document.getElementById(fileInputId);
+  if (!zone || !input) return;
+
+  ['dragenter','dragover'].forEach(ev => zone.addEventListener(ev, e => {
+    e.preventDefault(); zone.classList.add('drag-over');
+  }));
+  ['dragleave','drop'].forEach(ev => zone.addEventListener(ev, e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+  }));
+  zone.addEventListener('drop', e => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleImageFile(file);
+  });
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) handleImageFile(file);
+  });
+
+  const clearBtn = document.getElementById(clearBtnId);
+  if (clearBtn) clearBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    input.value = '';
+    document.getElementById(previewId).src = '';
+    document.getElementById(previewWrapId).style.display = 'none';
+    zone.querySelector('.drop-zone-inner').style.display = '';
+    onFile(null);
+  });
+
+  function handleImageFile(file) {
+    if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5 MB'); return; }
+    const preview = document.getElementById(previewId);
+    const wrap = document.getElementById(previewWrapId);
+    preview.src = URL.createObjectURL(file);
+    wrap.style.display = 'block';
+    zone.querySelector('.drop-zone-inner').style.display = 'none';
+    onFile(file);
+  }
+}
+
+setupDropZone({
+  zoneId: 'imageDropZone', fileInputId: 'productImageFile',
+  previewId: 'imagePreview', previewWrapId: 'imagePreviewWrap',
+  clearBtnId: 'clearImageBtn',
+  progressId: 'uploadProgress', progressBarId: 'uploadProgressBar', progressLabelId: 'uploadProgressLabel',
+  onFile: (file) => { selectedImageFile = file; }
 });
+
+setupDropZone({
+  zoneId: 'blogImageDropZone', fileInputId: 'blogImageFile',
+  previewId: 'blogImagePreview', previewWrapId: 'blogImagePreviewWrap',
+  clearBtnId: 'clearBlogImageBtn',
+  progressId: 'blogUploadProgress', progressBarId: 'blogUploadProgressBar', progressLabelId: 'blogUploadProgressLabel',
+  onFile: (file) => { selectedBlogImageFile = file; }
+});
+
+// Show progress during upload
+async function uploadImageWithProgress(file, progressBarId, progressLabelId, progressId) {
+  const prog = document.getElementById(progressId);
+  const bar = document.getElementById(progressBarId);
+  const label = document.getElementById(progressLabelId);
+  prog.style.display = 'flex';
+  bar.style.setProperty('--pct', '10%');
+  label.textContent = 'Uploading…';
+  try {
+    const url = await uploadImage(file, (pct) => {
+      bar.style.setProperty('--pct', pct + '%');
+      label.textContent = `Uploading… ${pct}%`;
+    });
+    bar.style.setProperty('--pct', '100%');
+    label.textContent = 'Done ✓';
+    setTimeout(() => { prog.style.display = 'none'; }, 1200);
+    return url;
+  } catch (err) {
+    prog.style.display = 'none';
+    throw err;
+  }
+}
 
 // ---------- Save (create / update) ----------
 form.addEventListener('submit', async (e) => {
@@ -248,7 +328,7 @@ form.addEventListener('submit', async (e) => {
     }
 
     if (selectedImageFile) {
-      imageUrl = await uploadImage(selectedImageFile);
+      imageUrl = await uploadImageWithProgress(selectedImageFile, 'uploadProgressBar', 'uploadProgressLabel', 'uploadProgress');
     }
 
     const salePriceRaw = document.getElementById('productSalePrice').value.trim();
@@ -292,9 +372,9 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-async function uploadImage(file) {
+async function uploadImage(file, folder = 'products') {
   const ext = file.name.split('.').pop();
-  const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabaseClient.storage.from('product-images').upload(path, file, { upsert: false });
   if (error) throw error;
   const { data } = supabaseClient.storage.from('product-images').getPublicUrl(path);
@@ -485,6 +565,7 @@ async function loadBlogPosts() {
 let BLOG_EDITING = null;
 function openBlogModal(post = null) {
   BLOG_EDITING = post;
+  selectedBlogImageFile = null;
   document.getElementById('blogId').value = post ? post.id : '';
   document.getElementById('blogTitle').value = post ? post.title : '';
   document.getElementById('blogExcerpt').value = post ? (post.excerpt || '') : '';
@@ -495,6 +576,19 @@ function openBlogModal(post = null) {
   document.getElementById('blogPublished').checked = post ? post.published : true;
   document.getElementById('blogFormError').textContent = '';
   document.getElementById('blogModalTitle').textContent = post ? 'Edit Blog Post' : 'New Blog Post';
+  // Reset blog drop zone
+  const blogPreviewWrap = document.getElementById('blogImagePreviewWrap');
+  const blogPreview = document.getElementById('blogImagePreview');
+  const blogDropInner = document.getElementById('blogDropZoneInner');
+  if (post && post.image_url) {
+    blogPreview.src = post.image_url;
+    blogPreviewWrap.style.display = 'block';
+    if (blogDropInner) blogDropInner.style.display = 'none';
+  } else {
+    blogPreviewWrap.style.display = 'none';
+    if (blogDropInner) blogDropInner.style.display = '';
+    blogPreview.src = '';
+  }
   document.getElementById('blogModal').classList.add('is-open');
   document.getElementById('blogModalOverlay').classList.add('is-open');
 }
@@ -523,11 +617,19 @@ document.getElementById('blogForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const errEl = document.getElementById('blogFormError');
   errEl.textContent = '';
+  let blogImageUrl = document.getElementById('blogImageUrl').value.trim() || null;
+  if (selectedBlogImageFile) {
+    try {
+      blogImageUrl = await uploadImageWithProgress(selectedBlogImageFile, 'blogUploadProgressBar', 'blogUploadProgressLabel', 'blogUploadProgress');
+    } catch (err) {
+      errEl.textContent = 'Image upload failed: ' + err.message; return;
+    }
+  }
   const payload = {
     title: document.getElementById('blogTitle').value.trim(),
     excerpt: document.getElementById('blogExcerpt').value.trim() || null,
     category: document.getElementById('blogCategory').value.trim() || null,
-    image_url: document.getElementById('blogImageUrl').value.trim() || null,
+    image_url: blogImageUrl,
     link_label: document.getElementById('blogLinkLabel').value.trim() || 'Read more',
     link_href: document.getElementById('blogLinkHref').value.trim() || '#shop',
     published: document.getElementById('blogPublished').checked,
