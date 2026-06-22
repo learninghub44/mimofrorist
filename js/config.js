@@ -16,5 +16,5 @@ window.MIMOH_CONFIG = {
   CURRENCY: "KES",
   BUSINESS_NAME: "Mimohflorist & Gift Shop",
   LOCATION: "Nairobi",
-  ADMIN_EMAILS: ["chrisodhiambo958@gmail.com"] // only these emails can access admin
+  ADMIN_EMAILS: ["mimo@gmail.com"] // only these emails can access admin
 };
