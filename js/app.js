@@ -466,9 +466,26 @@ function initHeroSlider() {
   startAuto();
 }
 
+// ---------- FAQ Accordion ----------
+function initFaqAccordion() {
+  const items = document.querySelectorAll('.faq-item');
+  if (!items.length) return;
+
+  items.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    if (!question) return;
+    question.addEventListener('click', () => {
+      const isOpen = item.classList.contains('is-open');
+      items.forEach(i => i.classList.remove('is-open'));
+      if (!isOpen) item.classList.add('is-open');
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initUI(); // menu + cart drawer wiring — must always run, independent of data load
   initHeroSlider();
+  initFaqAccordion();
   try {
     loadProducts();
   } catch (err) {
