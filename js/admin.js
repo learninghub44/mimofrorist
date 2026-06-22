@@ -338,6 +338,7 @@ document.querySelectorAll('.admin-tab-btn').forEach(btn => {
     if (panel) panel.style.display = 'block';
     if (btn.dataset.panel === 'promos') loadPromoCodes();
     if (btn.dataset.panel === 'blog') loadBlogPosts();
+    if (btn.dataset.panel === 'orders') loadOrders();
   });
 });
 
@@ -546,5 +547,63 @@ document.getElementById('blogForm').addEventListener('submit', async (e) => {
   closeBlogModal();
   loadBlogPosts();
 });
+
+// ============================================================
+// ORDERS
+// ============================================================
+async function loadOrders() {
+  const tbody = document.getElementById('ordersTableBody');
+  const countEl = document.getElementById('ordersCount');
+  tbody.innerHTML = '<tr><td colspan="6" class="muted-cell">Loading…</td></tr>';
+
+  // Join orders with customer_profiles to get names
+  const { data, error } = await supabaseClient
+    .from('orders')
+    .select(`
+      id,
+      total_amount,
+      items_summary,
+      voucher_code,
+      discount_amt,
+      created_at,
+      user_id,
+      customer_profiles ( display_name )
+    `)
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="6" class="muted-cell">Error: ${error.message}</td></tr>`;
+    return;
+  }
+  if (!data || !data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="muted-cell">No orders yet.</td></tr>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  if (countEl) countEl.textContent = `${data.length} order${data.length !== 1 ? 's' : ''}`;
+
+  tbody.innerHTML = data.map(o => {
+    const shortId = o.id.slice(0,8).toUpperCase();
+    const name = o.customer_profiles?.display_name || '—';
+    const items = o.items_summary || '—';
+    const voucher = o.voucher_code
+      ? `<span class="pill pill-green">${o.voucher_code}</span>`
+      : '—';
+    const total = `<strong>${fmt(o.total_amount || 0)}</strong>`;
+    const date = new Date(o.created_at).toLocaleDateString('en-KE', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    return `<tr>
+      <td style="font-family:monospace;font-size:.8rem">#${shortId}</td>
+      <td>${name}</td>
+      <td style="max-width:200px;white-space:normal;font-size:.83rem">${items}</td>
+      <td>${voucher}</td>
+      <td>${total}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${date}</td>
+    </tr>`;
+  }).join('');
+}
 
 })();
