@@ -20,6 +20,17 @@ let ALL_PRODUCTS = [];
 let ACTIVE_CATEGORY = 'All';
 let CART = JSON.parse(localStorage.getItem('mimoh_cart') || '[]');
 let WISHLIST = JSON.parse(localStorage.getItem('mimoh_wishlist') || '[]');
+
+// ---- Voucher codes (admin can add more here) ----
+const VOUCHER_CODES = {
+  'MIMO10':   { type: 'percent', value: 10, label: '10% off' },
+  'MIMO20':   { type: 'percent', value: 20, label: '20% off' },
+  'FLOWERS':  { type: 'percent', value: 15, label: '15% off' },
+  'BIRTHDAY': { type: 'flat',    value: 200, label: 'KES 200 off' },
+  'WEDDING':  { type: 'flat',    value: 500, label: 'KES 500 off' },
+  'NAIROBI':  { type: 'percent', value: 5,  label: '5% off' },
+};
+let APPLIED_VOUCHER = null; // { code, type, value, label }
 const PRODUCTS_PER_BATCH = 24;
 let visibleCount = PRODUCTS_PER_BATCH;
 let scrollObserver = null;
@@ -244,8 +255,20 @@ function removeFromCart(productId) {
   saveCart();
 }
 
-function cartTotal() {
+function cartSubtotal() {
   return CART.reduce((sum, i) => sum + i.price * i.qty, 0);
+}
+
+function cartDiscount() {
+  if (!APPLIED_VOUCHER) return 0;
+  const sub = cartSubtotal();
+  return APPLIED_VOUCHER.type === 'percent'
+    ? Math.round(sub * APPLIED_VOUCHER.value / 100)
+    : Math.min(APPLIED_VOUCHER.value, sub);
+}
+
+function cartTotal() {
+  return cartSubtotal() - cartDiscount();
 }
 
 function cartCount() {
@@ -297,6 +320,20 @@ function updateCartUI() {
     </div>
   `).join('');
 
+  document.getElementById('cartSubtotalVal').textContent = fmt(cartSubtotal());
+
+  const discountRow = document.getElementById('cartDiscountRow');
+  const discountVal  = document.getElementById('cartDiscountVal');
+  const discountCode = document.getElementById('cartDiscountCode');
+  const disc = cartDiscount();
+  if (disc > 0 && APPLIED_VOUCHER) {
+    discountRow.style.display = 'flex';
+    discountVal.textContent   = `- ${fmt(disc)}`;
+    discountCode.textContent  = APPLIED_VOUCHER.code;
+  } else {
+    discountRow.style.display = 'none';
+  }
+
   document.getElementById('cartTotalVal').textContent = fmt(cartTotal());
 
   itemsWrap.querySelectorAll('.qty-btn').forEach(btn => {
@@ -320,11 +357,17 @@ function showToast(msg) {
 function checkoutWhatsApp() {
   if (!CART.length) return;
   const lines = CART.map(i => `• ${i.name} x${i.qty} — ${fmt(i.price * i.qty)}`);
+  const disc = cartDiscount();
+  const discLine = disc > 0 && APPLIED_VOUCHER
+    ? [`Voucher (${APPLIED_VOUCHER.code}): - ${fmt(disc)}`]
+    : [];
   const msg = [
     `Hello ${cfg.BUSINESS_NAME}! I'd like to place an order:`,
     '',
     ...lines,
     '',
+    `Subtotal: ${fmt(cartSubtotal())}`,
+    ...discLine,
     `Total: ${fmt(cartTotal())}`,
     '',
     'Please confirm availability and delivery details. Thank you!'
@@ -383,6 +426,47 @@ function initUI() {
   document.getElementById('cartClose').addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
   document.getElementById('checkoutBtn').addEventListener('click', checkoutWhatsApp);
+
+  // Voucher code
+  const voucherInput = document.getElementById('voucherInput');
+  const voucherApply = document.getElementById('voucherApplyBtn');
+  const voucherMsg   = document.getElementById('voucherMsg');
+  if (voucherInput && voucherApply && voucherMsg) {
+    function applyVoucher() {
+      const code = voucherInput.value.trim().toUpperCase();
+      voucherMsg.className = 'voucher-msg';
+      if (!code) { voucherMsg.textContent = ''; return; }
+      const voucher = VOUCHER_CODES[code];
+      if (!voucher) {
+        APPLIED_VOUCHER = null;
+        voucherMsg.classList.add('error');
+        voucherMsg.textContent = '✗ Invalid code. Please check and try again.';
+        updateCartUI();
+        return;
+      }
+      APPLIED_VOUCHER = { code, ...voucher };
+      voucherMsg.classList.add('success');
+      voucherMsg.textContent = `✓ "${code}" applied — ${voucher.label}!`;
+      voucherApply.textContent = 'Remove';
+      voucherApply.style.background = 'var(--rose)';
+      updateCartUI();
+    }
+    function removeVoucher() {
+      APPLIED_VOUCHER = null;
+      voucherInput.value = '';
+      voucherMsg.className = 'voucher-msg';
+      voucherMsg.textContent = '';
+      voucherApply.textContent = 'Apply';
+      voucherApply.style.background = '';
+      updateCartUI();
+    }
+    voucherApply.addEventListener('click', () => {
+      if (APPLIED_VOUCHER) removeVoucher(); else applyVoucher();
+    });
+    voucherInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') applyVoucher();
+    });
+  }
 
   // Mobile nav
   if (navToggle && navLinks) {
@@ -680,6 +764,38 @@ function initWishlist() {
   updateWishlistCount();
 }
 
+function initNewsletter() {
+  const form  = document.getElementById('newsletterForm');
+  const email = document.getElementById('newsletterEmail');
+  const msg   = document.getElementById('newsletterMsg');
+  if (!form || !email || !msg) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    msg.className = 'newsletter-msg';
+    const val = email.value.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      msg.classList.add('error');
+      msg.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    // Store locally (real implementation would POST to an email service)
+    const subs = JSON.parse(localStorage.getItem('mimoh_subscribers') || '[]');
+    if (subs.includes(val)) {
+      msg.classList.add('success');
+      msg.textContent = '✓ You\'re already subscribed — thank you!';
+      return;
+    }
+    subs.push(val);
+    try { localStorage.setItem('mimoh_subscribers', JSON.stringify(subs)); } catch {}
+    msg.classList.add('success');
+    msg.textContent = '✓ Subscribed! Welcome to the Mimo family 🌸';
+    email.value = '';
+    // Also send a WhatsApp note to the business (optional lead capture)
+    // window.open(`https://wa.me/${cfg.WHATSAPP_NUMBER}?text=${encodeURIComponent(`New newsletter subscriber: ${val}`)}`, '_blank');
+  });
+}
+
 function initWaBubble() {
   const bubble   = document.getElementById('waBubble');
   const closeBtn = document.getElementById('waBubbleClose');
@@ -731,6 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaqAccordion();
   initSearch();
   initWishlist();
+  initNewsletter();
   initWaBubble();
   try {
     loadProducts();
