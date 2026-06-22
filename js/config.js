@@ -15,5 +15,6 @@ window.MIMOH_CONFIG = {
   WHATSAPP_NUMBER: "254782403253", // no +, no spaces
   CURRENCY: "KES",
   BUSINESS_NAME: "Mimohflorist & Gift Shop",
-  LOCATION: "Nairobi"
+  LOCATION: "Nairobi",
+  ADMIN_EMAILS: ["chrisodhiambo958@gmail.com"] // only these emails can access admin
 };

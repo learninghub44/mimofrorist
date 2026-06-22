@@ -24,11 +24,18 @@ let selectedImageFile = null;
 let SEARCH_TERM = '';
 
 // ---------- Auth ----------
+const ADMIN_EMAILS = (cfg.ADMIN_EMAILS || []).map(e => e.toLowerCase());
+
+function isAdminEmail(email) {
+  return ADMIN_EMAILS.includes((email || '').toLowerCase());
+}
+
 async function checkSession() {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if (session) {
+  if (session && isAdminEmail(session.user.email)) {
     showAdmin(session.user);
   } else {
+    if (session) await supabaseClient.auth.signOut(); // sign out non-admin sessions
     showLogin();
   }
 }
@@ -52,9 +59,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const errEl = document.getElementById('loginError');
   errEl.textContent = '';
 
+  if (!isAdminEmail(email)) {
+    errEl.textContent = 'Access denied. This account does not have admin permissions.';
+    return;
+  }
+
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) {
-    console.error('Login error:', error);
     errEl.textContent = error.message || 'Login failed. Please try again.';
     return;
   }
